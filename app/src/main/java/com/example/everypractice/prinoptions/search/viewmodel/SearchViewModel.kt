@@ -16,6 +16,7 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     //A DIFERENCIA DEL ONE HISTORY QUE MANDA EL ID PARA RECIEN RECIBIR
     val allHistory: LiveData<List<LastSearch>> = repository.allHistory.asLiveData()
 
+    private fun listOut() = repository.obtainListWords()
     /*fun obtainOneHistorial(id:Int): LiveData<LastSearch>{
         return repository.obtainOneHistorial(id).asLiveData()
     }*/
@@ -61,9 +62,9 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     fun saveWordInDatabase(word: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val wordObject = createLastSearchObject(word)
-            val list = repository.obtainListWords()
-            Log.d("aaa", "list collected: $list")
-            if (list.contains(word)) {
+            /*val list = repository.obtainListWords()*/
+            Log.d("aaa", "list collected: ${listOut()}")
+            if (listOut().contains(word)) {
                 val currentIdOfWord = obtainIdFromWord(word)
                 Log.d("aaa", "current id: $currentIdOfWord")
                 deleteSearchDatabase(LastSearch(currentIdOfWord, word))
