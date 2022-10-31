@@ -6,8 +6,8 @@ import com.example.everypractice.prinoptions.search.repository.SearchRepository
 
 class HistoryApplication : Application() {
 
-    val database : SearchDatabase by lazy { SearchDatabase.getDatabase(this) }
+    private val database : SearchDatabase by lazy { SearchDatabase.getDatabase(this) }
 
-    val repository : SearchRepository by lazy { SearchRepository(database.lastSearchDao()) }
+    val repository : SearchRepository by lazy { SearchRepository(database.lastSearchDao) }
 
 }

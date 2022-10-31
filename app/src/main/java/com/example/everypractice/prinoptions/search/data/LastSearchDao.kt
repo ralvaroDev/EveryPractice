@@ -11,7 +11,7 @@ interface LastSearchDao {
     fun getHistorial(): Flow<List<LastSearch>>
 
     @Query("SELECT last_search from historial")
-    fun getListWordsHistorial(): Flow<List<String>>
+    fun getListWordsHistorial(): List<String>
 
     @Query("SELECT * from historial WHERE id = :id")
     fun getOneHistorial(id: Int): Flow<LastSearch>
