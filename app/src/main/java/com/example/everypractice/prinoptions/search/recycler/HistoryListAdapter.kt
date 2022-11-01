@@ -23,6 +23,10 @@ interface MovementHelper {
     fun onMove(view: View)
 }
 
+data class TimeHelper(
+    val number: Int,
+    val numberIndicator: String
+)
 
 //este parametro manda lo que esta en el parentesis
 class HistoryListAdapter(
@@ -44,18 +48,52 @@ class HistoryListAdapter(
             onSwipeListener: (View, LastSearch) -> Unit
         ) {
 
+            val timeHelper = getTimeFromTimestamp(lastSearch.timestamp)
             binding.apply {
                 historyElement.text = lastSearch.lastSearch
+                numberTime.text = timeHelper.number.toString()
+                textTime.text = timeHelper.numberIndicator
             }
             //ESTO NOS DEVUELVE LA FUNCION DE CLICKEO CADA QUE SE CLIQUEA
             binding.deleteButton.setOnClickListener { onClickListener(lastSearch) }
-            binding.historyElement.setOnClickListener {
+            binding.textContainer.setOnClickListener {
                 //onClickListener(lastSearch)
                 onHistoryClicked(lastSearch)
             }
             onSwipeListener(binding.historyCard,lastSearch)
         }
 
+        private fun getTimeFromTimestamp(unformattedTimestamp: Long) : TimeHelper {
+            val seconds = unformattedTimestamp / 1000
+            val minutes = seconds.toInt() / 60
+            val hours = minutes / 60
+            val days = hours / 24
+            val weeks = days / 7
+            val months = weeks / 4
+            val years = months / 12
+            val dumpList = listOf(
+                TimeHelper(years, "Years"),
+                TimeHelper(months, "Months"),
+                TimeHelper(weeks, "Weeks"),
+                TimeHelper(days, "Days"),
+                TimeHelper(hours, "Hours"),
+                TimeHelper(minutes, "Min"),
+                TimeHelper(seconds.toInt(), "Sec")
+            )
+            Log.d("aaa", "list of times: $dumpList")
+            try {
+                return run loop@{
+                    dumpList.forEach { element ->
+                        if (element.number != 0) {
+                            return@loop element
+                        }
+                    }
+                } as TimeHelper
+            } catch (e: Exception) {
+                Log.d("aaa", "error cast to TimeHelper: ${e.message}")
+                return TimeHelper(1, "Sec")
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {

@@ -5,7 +5,7 @@ import com.example.everypractice.prinoptions.search.data.LastSearch
 import com.example.everypractice.prinoptions.search.data.LastSearchDao
 import kotlinx.coroutines.flow.Flow
 
-//ESTE NOS DA EL ACCESO A LAS FUNCIONES DE MODIFICACION DE LA BASE DE DATOS, SINE XPONER TODO LA BASE DDE DATOS
+//ESTE NOS DA EL ACCESO A LAS FUNCIONES DE MODIFICACION DE LA BASE DE DATOS, SINE XPONER TODO LA BASE DE DATOS
 class SearchRepository(private val lastSearchDao: LastSearchDao) {
 
     val allHistory: Flow<List<LastSearch>> = lastSearchDao.getLastSearchList()

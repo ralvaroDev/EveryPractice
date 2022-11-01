@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class LastSearch(
     @PrimaryKey (autoGenerate = true) val id : Int = 0,
     @ColumnInfo (name = "last_search") val lastSearch: String,
-    @ColumnInfo val timestamp: Long
+    @ColumnInfo var timestamp: Long
 )
 
 //DEBEMOS CAMBIAR EL PRIMARY KEY, PARA QUE ESTE SEA EL NAME Y NO EL ID

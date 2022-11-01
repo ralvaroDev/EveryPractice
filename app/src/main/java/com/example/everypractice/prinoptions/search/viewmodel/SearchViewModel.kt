@@ -5,6 +5,11 @@ import androidx.lifecycle.*
 import com.example.everypractice.prinoptions.search.data.LastSearch
 import com.example.everypractice.prinoptions.search.repository.SearchRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 //ACCEDENIS A LOS DATOS DESDE EL REPOSITORIO, NO NECESITAMOS OBTENER LA BASE DE DATOS COMPLETA
@@ -13,6 +18,30 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     //CUANDO PIDE Y NO MANDA SE USA SOLO UNA VARIABLE PARA ALMACENAR
     //A DIFERENCIA DEL ONE HISTORY QUE MANDA EL ID PARA RECIEN RECIBIR
     val allHistory: LiveData<List<LastSearch>> = repository.allHistory.asLiveData()
+
+    val allHistoryMod = Transformations.map(allHistory) {
+        val currentTimestamp = System.currentTimeMillis()
+        it.forEach { element ->
+            element.timestamp = currentTimestamp - element.timestamp
+        }
+        it
+    }
+
+    val allFlowHistory = flow {
+        Log.d("aaa", "pre while")
+        while (true) {
+            /*val innerFlow = repository.allHistory.map {
+                val currentTimestamp = System.currentTimeMillis()
+                it.forEach { element ->
+                    element.timestamp = currentTimestamp - element.timestamp
+                }
+                it
+            }.asLiveData()*/
+            Log.d("aaa", "emit flow: ${repository.allHistory}")
+            emit(repository.allHistory)
+            delay(1000L)
+        }
+    }
 
     private fun wordsOfLastSearchList() = repository.obtainListWords()
     /*fun obtainOneHistorial(id:Int): LiveData<LastSearch>{

@@ -79,7 +79,7 @@ class SearchFragment : Fragment() {
         binding.rvHistory.adapter = adapter
 
         //para que actualice la lista ante cambios
-        viewModel.allHistory.observe(this.viewLifecycleOwner) {
+        viewModel.allHistoryMod.observe(viewLifecycleOwner) {
             it.let {
                 /*val list = StringBuilder()
                 it.forEach { obj ->
