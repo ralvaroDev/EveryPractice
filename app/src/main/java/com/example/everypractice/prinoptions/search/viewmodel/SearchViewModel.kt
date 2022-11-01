@@ -37,7 +37,7 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     //FUNCIONES
     //ESTA NOS CONVIERTE LA PALABRA EN UN OBJETO LAS SEARCH
     private fun createLastSearchObject(historialName: String): LastSearch {
-        return LastSearch(lastSearch = historialName)
+        return LastSearch(lastSearch = historialName, timestamp = System.currentTimeMillis())
     }
 
     //FUNCIONES CORRUTINAS DIRECTAS QUE RECIBEN UNA VARIABLE ELEMENTO TIPO
@@ -60,14 +60,13 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     fun updateWordInLastSearchList(word: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val wordObject = createLastSearchObject(word)
-            /*val list = repository.obtainListWords()*/
             Log.d("aaa", "list collected: ${wordsOfLastSearchList()}")
             if (wordsOfLastSearchList().contains(word)) {
-                val currentIdOfWord = obtainIdFromWord(word)
-                Log.d("aaa", "current id: $currentIdOfWord")
-                deleteLastSearchDatabase(LastSearch(currentIdOfWord, word))
+                /*repository.deleteLastSearchByWord(word)*/
+                repository.updateLastSearchTimestamp(word, System.currentTimeMillis())
+            } else {
+                addLastSearchToDatabase(wordObject)
             }
-            addLastSearchToDatabase(wordObject)
         }
     }
 }

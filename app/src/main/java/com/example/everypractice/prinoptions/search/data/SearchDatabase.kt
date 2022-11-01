@@ -22,7 +22,7 @@ abstract class SearchDatabase: RoomDatabase(){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     SearchDatabase::class.java,
-                    "historial_database"
+                    "history_search"
                 )
                     .fallbackToDestructiveMigration()
                     .build()

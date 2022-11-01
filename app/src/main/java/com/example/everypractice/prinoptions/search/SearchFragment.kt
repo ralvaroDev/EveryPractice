@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -35,7 +36,7 @@ import kotlin.math.min
 class SearchFragment : Fragment() {
 
     private val TAG = "aaa"
-    var MIN_SWIPE_DISTANCE : Float? = 0.0f
+    var MIN_SWIPE_DISTANCE: Float? = 0.0f
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -58,7 +59,7 @@ class SearchFragment : Fragment() {
     ): View {
         Log.d(TAG, "Fragment onCreateView ")
         // Inflate the layout for this fragment
-        _binding = FragmentSearchBinding.inflate(inflater,container,false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -127,9 +128,9 @@ class SearchFragment : Fragment() {
 
     //HANDLE SWIPES
     @SuppressLint("ClickableViewAccessibility")
-    fun swipeAbility(view: View, element: LastSearch?){
+    fun swipeAbility(view: View, element: LastSearch?) {
         val exampleCard = view
-        val start =300f
+        val start = 300f
         exampleCard.setOnTouchListener(
             View.OnTouchListener { v, event ->
 
@@ -162,7 +163,7 @@ class SearchFragment : Fragment() {
                                             //CREO QUE EXPLOTA PORQUE MANDA MUCHOS INTENTS A LA VEZ
                                             //YA QUE AL USAR UN DISPATCHER ESTE ES CONSTANTE
                                             //ESTO SERIA PARA ACTUALIZAR UN VALOR, COMO UN LIVE DATA Y OBSERVER
-                                            if (done){
+                                            if (done) {
                                                 done = false
                                                 onClickSearch()
                                             }
@@ -176,7 +177,10 @@ class SearchFragment : Fragment() {
                             })
 
                             .start()
-                        Log.d(TAG, "Values MOVE UP: $cardStart --- ${exampleCard.x} ---- ${displayMetrics.widthPixels.toFloat()}  ---- ${exampleCard.x - (cardWidth / 2)}")
+                        Log.d(
+                            TAG,
+                            "Values MOVE UP: $cardStart --- ${exampleCard.x} ---- ${displayMetrics.widthPixels.toFloat()}  ---- ${exampleCard.x - (cardWidth / 2)}"
+                        )
                         Log.d(TAG, "swipeAbility: SECOND SWIPE")
                         // AQUI SI YA NO OCURRE EL BUG, SOLO MANDA UNA VEZ
                         //TODO("PUT THE ACTION HERE")
@@ -192,7 +196,10 @@ class SearchFragment : Fragment() {
                         // the card is swiped to the left side, not to the right
                         // Detailed explanation at: https://genicsblog.com/swipe-animation-on-a-cardview-android
                         if (newX - cardWidth < cardStart) {
-                            Log.d(TAG, "Values MOVE: $cardStart --- $newX ---- ${displayMetrics.widthPixels.toFloat()}  ---- ${newX - (cardWidth / 2)}")
+                            Log.d(
+                                TAG,
+                                "Values MOVE: $cardStart --- $newX ---- ${displayMetrics.widthPixels.toFloat()}  ---- ${newX - (cardWidth / 2)}"
+                            )
                             exampleCard.animate()
                                 .x(
                                     min(cardStart, newX - (cardWidth / 2))
@@ -249,7 +256,10 @@ class SearchFragment : Fragment() {
         val queryUrl: Uri = Uri.parse(SearchActivity.SEARCH_PREFIX.plus(entry))
 
         val intent = Intent(Intent.ACTION_VIEW, queryUrl)
-        requireContext().startActivity(intent)
+        //requireContext().startActivity(intent)
+        requireActivity().runOnUiThread {
+            Toast.makeText(requireContext(), "search $entry", Toast.LENGTH_SHORT).show()
+        }
     }
 
     //CREA UNA EXTENSION KOTLIN QUE PERMITE LINKEAR EL BOTON ENTER A CUALQUIER FUNCION QUE LA NECESITE

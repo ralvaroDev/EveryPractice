@@ -20,6 +20,10 @@ class SearchRepository(private val lastSearchDao: LastSearchDao) {
 
     fun obtainListWords() = lastSearchDao.getWordsOfLastSearchList()
 
+    fun deleteLastSearchByWord(word: String) = lastSearchDao.deleteByWord(word)
+
+    fun updateLastSearchTimestamp(word: String, timestamp: Long) = lastSearchDao.updateLastSearchTimestamp(word, timestamp)
+
     @WorkerThread
     suspend fun insert(lastSearch: LastSearch) {
         lastSearchDao.insert(lastSearch)
