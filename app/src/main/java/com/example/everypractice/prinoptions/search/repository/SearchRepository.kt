@@ -10,11 +10,11 @@ class SearchRepository(private val lastSearchDao: LastSearchDao) {
 
     val allHistory: Flow<List<LastSearch>> = lastSearchDao.getLastSearchList()
 
-    fun obtainOneHistorial(id: Int): Flow<LastSearch> {
+    fun obtainLastSearchById(id: Int): Flow<LastSearch> {
         return lastSearchDao.getLastSearchById(id)
     }
 
-    fun obtainIdAlreadySearch(lastSearch: String): Int {
+    fun obtainIdByWord(lastSearch: String): Int {
         return lastSearchDao.getIdByWord(lastSearch)
     }
 

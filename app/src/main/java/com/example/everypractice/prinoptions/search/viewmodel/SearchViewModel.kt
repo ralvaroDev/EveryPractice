@@ -5,9 +5,7 @@ import androidx.lifecycle.*
 import com.example.everypractice.prinoptions.search.data.LastSearch
 import com.example.everypractice.prinoptions.search.repository.SearchRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.*
 
 //ACCEDENIS A LOS DATOS DESDE EL REPOSITORIO, NO NECESITAMOS OBTENER LA BASE DE DATOS COMPLETA
 class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
@@ -16,13 +14,13 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     //A DIFERENCIA DEL ONE HISTORY QUE MANDA EL ID PARA RECIEN RECIBIR
     val allHistory: LiveData<List<LastSearch>> = repository.allHistory.asLiveData()
 
-    private fun listOut() = repository.obtainListWords()
+    private fun wordsOfLastSearchList() = repository.obtainListWords()
     /*fun obtainOneHistorial(id:Int): LiveData<LastSearch>{
         return repository.obtainOneHistorial(id).asLiveData()
     }*/
 
     private fun obtainIdFromWord(word: String): Int {
-        return repository.obtainIdAlreadySearch(word)
+        return repository.obtainIdByWord(word)
     }
 
     //HACER QUE EL DAO NOS DE LA LISTA DE TODOS LOS NOMBRES
@@ -33,43 +31,43 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
     //ESTA ES LA QUE NOS TRAE EL VALOR DEL FRAGMENT QUE SE BUSCARA
     fun createObjectAndSaveInDatabase(name: String) {
         val variableSearch = createLastSearchObject(name)
-        addToDatabase(variableSearch)
+        addLastSearchToDatabase(variableSearch)
     }
 
     //FUNCIONES
     //ESTA NOS CONVIERTE LA PALABRA EN UN OBJETO LAS SEARCH
-    fun createLastSearchObject(historialName: String): LastSearch {
+    private fun createLastSearchObject(historialName: String): LastSearch {
         return LastSearch(lastSearch = historialName)
     }
 
     //FUNCIONES CORRUTINAS DIRECTAS QUE RECIBEN UNA VARIABLE ELEMENTO TIPO
     //ESTA SE CONECTA CON EL REPOSITORIO
 
-    private fun addToDatabase(lastSearch: LastSearch) {
+    private fun addLastSearchToDatabase(lastSearch: LastSearch) {
         viewModelScope.launch (Dispatchers.IO) {
             Log.d("aaa", "add ${lastSearch.lastSearch} to database")
             repository.insert(lastSearch)
         }
     }
 
-    fun deleteSearchDatabase(lastSearch: LastSearch) {
+    fun deleteLastSearchDatabase(lastSearch: LastSearch) {
         viewModelScope.launch (Dispatchers.IO) {
             Log.d("aaa", "delete ${lastSearch.lastSearch} from database")
             repository.delete(lastSearch)
         }
     }
 
-    fun saveWordInDatabase(word: String) {
+    fun updateWordInLastSearchList(word: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val wordObject = createLastSearchObject(word)
             /*val list = repository.obtainListWords()*/
-            Log.d("aaa", "list collected: ${listOut()}")
-            if (listOut().contains(word)) {
+            Log.d("aaa", "list collected: ${wordsOfLastSearchList()}")
+            if (wordsOfLastSearchList().contains(word)) {
                 val currentIdOfWord = obtainIdFromWord(word)
                 Log.d("aaa", "current id: $currentIdOfWord")
-                deleteSearchDatabase(LastSearch(currentIdOfWord, word))
+                deleteLastSearchDatabase(LastSearch(currentIdOfWord, word))
             }
-            addToDatabase(wordObject)
+            addLastSearchToDatabase(wordObject)
         }
     }
 }

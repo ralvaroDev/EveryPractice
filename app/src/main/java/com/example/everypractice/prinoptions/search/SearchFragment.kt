@@ -29,8 +29,6 @@ import com.example.everypractice.prinoptions.search.viewmodel.SearchViewModel
 import com.example.everypractice.prinoptions.search.viewmodel.SearchViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -57,7 +55,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Log.d(TAG, "Fragment onCreateView ")
         // Inflate the layout for this fragment
         _binding = FragmentSearchBinding.inflate(inflater,container,false)
@@ -67,12 +65,12 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        enableDisableText()
+        enableOrDisableButtonSearch()
 
         //PARA TENER DOS LAMBDAS SE USA EL PARENTESIS Y EN CADA VALOR UN CORCHETE
         val adapter = HistoryListAdapter(
-            { onAutowriteSelected(it) },
-            { onDeleteSelected(it) },
+            { onAutoWriteSelected(it) },
+            { deleteItemInDatabase(it) },
             { card, element ->
                 swipeAbility(card, element)
             }
@@ -92,7 +90,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.btnGoGoogle.setOnClickListener {
-            goGoogle()
+            onClickSearch()
         }
 /*
         //Esto lo que hace es setear el boton enter en realizar la accion
@@ -107,11 +105,11 @@ class SearchFragment : Fragment() {
 
         swipeAbility(binding.exampleCard, null)
         //Esto lo que hace es setear el boton enter en realizar la accion
-        binding.tfSearch.onSearch { goGoogle() }
+        binding.tfSearch.onSearch { onClickSearch() }
     }
 
     //EDIT TEXT LISTENER
-    fun enableDisableText() {
+    private fun enableOrDisableButtonSearch() {
         binding.btnGoGoogle.isEnabled = false
         binding.tfSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -166,7 +164,7 @@ class SearchFragment : Fragment() {
                                             //ESTO SERIA PARA ACTUALIZAR UN VALOR, COMO UN LIVE DATA Y OBSERVER
                                             if (done){
                                                 done = false
-                                                goGoogle()
+                                                onClickSearch()
                                             }
 
                                             //goGoogle()
@@ -221,21 +219,17 @@ class SearchFragment : Fragment() {
         )
     }
 
-    fun bind(lastSearch: LastSearch) {
+    private fun deleteItemInDatabase(lastSearch: LastSearch) {
+        viewModel.deleteLastSearchDatabase(lastSearch)
+    }
+
+    private fun onAutoWriteSelected(lastSearch: LastSearch) {
         binding.apply {
             tfSearch.setText(lastSearch.lastSearch, TextView.BufferType.SPANNABLE)
         }
     }
 
-    fun onDeleteSelected(lastSearch: LastSearch) {
-        viewModel.deleteSearchDatabase(lastSearch)
-    }
-
-    fun onAutowriteSelected(lastSearch: LastSearch) {
-        bind(lastSearch)
-    }
-
-    private fun goGoogle() {
+    private fun onClickSearch() {
         var entrySearch = ""
         requireActivity().runOnUiThread {
             entrySearch = binding.tfSearch.text.toString()
@@ -245,13 +239,11 @@ class SearchFragment : Fragment() {
         //binding.tfSearch.setText("", TextView.BufferType.SPANNABLE)
         //val snack = Snackbar.make(it, "$entrySearch", Snackbar.LENGTH_SHORT)
         //snack.show()
-        if (entrySearch.isNotEmpty()) {
-            viewModel.saveWordInDatabase(entrySearch)
-            goGoogleIntent(entrySearch)
-        }
+        viewModel.updateWordInLastSearchList(entrySearch)
+        goToBrowser(entrySearch)
     }
 
-    private fun goGoogleIntent(entry: String) {
+    private fun goToBrowser(entry: String) {
         Log.d(TAG, "google Intent: $entry")
         //Creamos la Url
         val queryUrl: Uri = Uri.parse(SearchActivity.SEARCH_PREFIX.plus(entry))
@@ -260,15 +252,13 @@ class SearchFragment : Fragment() {
         requireContext().startActivity(intent)
     }
 
-    private fun addHistory(search: String) {
-        viewModel.createObjectAndSaveInDatabase(search)
-    }
-
     //CREA UNA EXTENSION KOTLIN QUE PERMITE LINKEAR EL BOTON ENTER A CUALQUIER FUNCION QUE LA NECESITE
-    fun EditText.onSearch(callback: () -> Unit) {
+    private fun EditText.onSearch(callback: () -> Unit) {
         setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                callback.invoke()
+                if (binding.tfSearch.text.toString().trim().isNotEmpty()) {
+                    callback.invoke()
+                }
                 return@setOnEditorActionListener true
             } else false
         }
