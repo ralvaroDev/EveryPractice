@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- These ids are used in both the menu (navigation.xml) and the nav graph (nav_graph.xml).
+         Each menu item and nav graph fragment represent the same logical item. -->
+   <!--TODO DATO: UNA MANERA DE PODER MANEJAR LOS FRAGMENTS ES MEDIANTE SU ID QUE SE AUTOGENERA EN EL NAV GRAPH-->
+
+    <item name="navigation_home" type="id"/>
+    <item name="navigation_favourite" type="id"/>
+    <item name="navigation_search" type="id"/>
+
+</resources>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.everypractice.prinoptions.movies.vm.MovieViewModel"/>
+
+        <variable
+            name="movie"
+            type="com.example.everypractice.prinoptions.movies.data.domain.TemporarySearchMovieElement" />
+        
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        app:cardBackgroundColor="#333542"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp"
+        android:id="@+id/card_element_search"
+        tools:ignore="ContentDescription"
+        android:layout_width="150dp"
+        android:layout_height="240dp"
+        android:layout_margin="24dp">
+
+        <ImageView
+            android:id="@+id/portada"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            app:bindImage="@{movie.posterPathUrl}"
+            tools:srcCompat="@drawable/img_pacific_rim" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom">
+
+
+            <!--suma de la mitad de la imagen mas el de este cuadro-->
+            <ImageView
+                android:paddingBottom="175dp"
+                android:id="@+id/glass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+
+                tools:src="@drawable/img_pacific_rim"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/title_movie"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:bindTitle="@{movie.title}"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:elevation="5dp"
+                tools:text="@string/pacific_rim_the_black"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/textView16"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:singleLine="true"
+                app:bindgGenreIds="@{movie.genreIds}"
+                tools:text="Action, Sci-Fi, Superhero"
+                android:textColor="#ffffff"
+                android:textSize="9sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title_movie"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:background="@drawable/ic_star"
+            android:id="@+id/button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="right"
+            android:text="" />
+
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

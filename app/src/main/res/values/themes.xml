@@ -25,13 +25,62 @@
         <item name="android:letterSpacing">0.03125</item>
     </style>
 
-
     <style name="MyEditTextTheme2">
         <item name="colorOnSurface">#e3e4e9</item>
         <item name="android:textColorHint">#9fa8b6</item>
         <item name="startIconTint">#828ea0</item>
+        <item name="colorPrimary">#828ea0</item>
     </style>
 
+    <style name="Theme.EveryPracticeMovie" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">#1d1d28</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">#d7d7d9</item>
+        <item name="android:textColor">#d7d7d9</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.EveryPracticeMovieInverter" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">#EFEFF4</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">#d7d7d9</item>
+        <item name="android:textColor">#d7d7d9</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.App" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimaryContainer">@color/purple_500</item>
+        <item name="colorOnPrimaryContainer">@color/purple_700</item>
+    </style>
+
+    <style name="Widget.App.ExtendedFloatingActionButton" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
+    </style>
+
+    <style name="Widget.App.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
+    </style>
+
+    <style name="ThemeOverlay.App.FloatingActionButton" parent="">
+        <item name="colorContainer">@color/purple_500</item>
+        <item name="colorOnContainer">@color/purple_700</item>
+    </style>
 
 
 </resources>

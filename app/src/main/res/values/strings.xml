@@ -2,4 +2,26 @@
     <string name="app_name">EveryPractice</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pacific_rim_the_black">Pacific Rim The Black</string>
+    <string name="guillermo_del_toro">Guillermo del Toro</string>
+    <string name="see_details">See Details</string>
+    <string name="comedy">Comedy</string>
+    <string name="rating_sample">8.7/10</string>
+    <string name="rating">Rating</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="movie_detail">Movie Detail</string>
+    <string name="overview_sample">Los minions, ingenuos y torpes ayudantes de villano, llevan buscando, desde el principio de los tiempos, un verdadero malhechor al que servir. A lo largo de una evolución de millones de años, los minions se han puesto al servicio de los amos más despreciables. Kevin, acompañado por el rebelde Stuart y el adorable Bob, emprende un emocionante viaje para conseguir una jefa a quien servir, la terrible Scarlet Overkill.</string>
+    <string name="ver_la_coleccion">VER LA COLECCION</string>
+    <string name="duration">Duration</string>
+    <string name="g_nero">Género</string>
+    <string name="trailer">Trailer</string>
+    <string name="popular_now">Popular Now</string>
+    <string name="see_all">See all</string>
+    <string name="any_favourite_genre">Any favourite genre?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="forgot">Forgot?</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="sign_in">Sign In</string>
+    <string name="password">Password</string>
 </resources>

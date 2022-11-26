@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/blue_app"
+        android:id="@+id/element_popular_movie"
+        android:layout_width="wrap_content"
+        android:layout_height="280dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_element_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:layout_marginEnd="10dp"
+            app:cardBackgroundColor="#333542"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription">
+
+            <ImageView
+                android:id="@+id/portada"
+                android:layout_width="wrap_content"
+                android:layout_height="220dp"
+                android:adjustViewBounds="true"
+                tools:srcCompat="@drawable/img_poster_movie_sample_2" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/title_movie"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="5dp"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/card_element_search"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/card_element_search"
+            tools:text="@string/pacific_rim_the_black" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_rated"
+            android:layout_width="40dp"
+            android:layout_margin="4dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom|end"
+            app:cardBackgroundColor="#fffdff"
+            app:cardCornerRadius="13dp"
+            app:layout_constraintBottom_toBottomOf="@+id/card_element_search"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/tv_rated"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                tools:text="6.0"
+
+                />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

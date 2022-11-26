@@ -15,7 +15,7 @@ abstract class SearchDatabase: RoomDatabase(){
         @Volatile
         private var INSTANCE: SearchDatabase? = null
 
-        fun getDatabase(context: Context):SearchDatabase{
+        fun getDatabase(context: Context): SearchDatabase {
 
             return INSTANCE ?: synchronized(this){
 

@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import com.example.everypractice.consval.USER_IMAGE
 import com.example.everypractice.consval.USER_NAME
 import com.example.everypractice.databinding.FragmentStartFagmentBinding
+import com.example.everypractice.prinoptions.movies.ui.MoviesMainActivity
 import com.example.everypractice.prinoptions.search.SearchActivity
-import com.example.everypractice.prinoptions.timer.TimerActivity
 
 
 class StartFragment : Fragment() {
@@ -36,13 +36,16 @@ class StartFragment : Fragment() {
             //es necesario tanto context?
         }
 
-        binding.btnTimer.setOnClickListener {
-            val intent = Intent(context,TimerActivity::class.java)
-            startActivity(intent)
+        binding.btnCartelera.setOnClickListener {
+            val content = context
+            val intent = Intent(context,MoviesMainActivity::class.java)
+            content?.startActivity(intent)
         }
 
+
+
         binding.apply {
-            btnCartelera.isEnabled = false
+            btnCartelera.isEnabled = true
             btnTimer.isEnabled = false
             prox.isEnabled = false
             tvUserName.text = USER_NAME

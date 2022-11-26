@@ -4,44 +4,55 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.everypractice.prinoptions.search.data.LastSearch
 import com.example.everypractice.prinoptions.search.repository.SearchRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 //ACCEDENIS A LOS DATOS DESDE EL REPOSITORIO, NO NECESITAMOS OBTENER LA BASE DE DATOS COMPLETA
 class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
+    val scope: CoroutineScope
+        get() = viewModelScope
+
     //CUANDO PIDE Y NO MANDA SE USA SOLO UNA VARIABLE PARA ALMACENAR
     //A DIFERENCIA DEL ONE HISTORY QUE MANDA EL ID PARA RECIEN RECIBIR
     val allHistory: LiveData<List<LastSearch>> = repository.allHistory.asLiveData()
+    private val coroutineScope = CoroutineScope(Job())
 
-    val allHistoryMod = Transformations.map(allHistory) {
-        val currentTimestamp = System.currentTimeMillis()
-        it.forEach { element ->
-            element.timestamp = currentTimestamp - element.timestamp
-        }
-        it
-    }
+    val allStateFlow = repository.allHistory
+        .onEach { list ->
+            val currentTimestamp = System.currentTimeMillis()
+            list.map {
+                it.timestamp = currentTimestamp - it.timestamp
+            }
+        }.stateIn(coroutineScope, SharingStarted.Eagerly, allHistory.value)
+
 
     val allFlowHistory = flow {
         Log.d("aaa", "pre while")
         while (true) {
-            /*val innerFlow = repository.allHistory.map {
+            val innerFlow = repository.allHistory.map {
                 val currentTimestamp = System.currentTimeMillis()
                 it.forEach { element ->
-                    element.timestamp = currentTimestamp - element.timestamp
+                    element.timestamp =
+                        /*(
+                            viewModelScope.launch {
+                                triggerFlow().collectLatest {
+                                    it.toLong()
+                                }
+                            }
+
+                    )*/
+                        currentTimestamp - element.timestamp
                 }
                 it
-            }.asLiveData()*/
+            }.asLiveData()
             Log.d("aaa", "emit flow: ${repository.allHistory}")
-            emit(repository.allHistory)
-            delay(1000L)
+            emit(innerFlow)
+            delay(5000L)
         }
     }
+
+
 
     private fun wordsOfLastSearchList() = repository.obtainListWords()
     /*fun obtainOneHistorial(id:Int): LiveData<LastSearch>{

@@ -24,8 +24,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.everypractice.databinding.FragmentSearchBinding
+import com.example.everypractice.prinoptions.HistoryApplication
 import com.example.everypractice.prinoptions.search.data.LastSearch
 import com.example.everypractice.prinoptions.search.recycler.HistoryListAdapter
+import com.example.everypractice.prinoptions.search.recycler.TimeHelper
 import com.example.everypractice.prinoptions.search.viewmodel.SearchViewModel
 import com.example.everypractice.prinoptions.search.viewmodel.SearchViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,7 @@ import kotlin.math.min
 class SearchFragment : Fragment() {
 
     private val TAG = "aaa"
+    private val TAG2 = "bbb"
     var MIN_SWIPE_DISTANCE: Float? = 0.0f
 
     override fun onAttach(context: Context) {
@@ -66,6 +69,8 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         enableOrDisableButtonSearch()
 
         //PARA TENER DOS LAMBDAS SE USA EL PARENTESIS Y EN CADA VALOR UN CORCHETE
@@ -74,21 +79,34 @@ class SearchFragment : Fragment() {
             { deleteItemInDatabase(it) },
             { card, element ->
                 swipeAbility(card, element)
-            }
+            },
+            { text,a, isAlive->
+                indiviTime(text,a, isAlive)
+            },
+            viewModel
         )
         binding.rvHistory.adapter = adapter
 
         //para que actualice la lista ante cambios
-        viewModel.allHistoryMod.observe(viewLifecycleOwner) {
-            it.let {
-                /*val list = StringBuilder()
-                it.forEach { obj ->
-                    list.append(obj.lastSearch).append(", ")
-                }
-                Log.d(TAG, "List of words: $list")*/
+
+        /*lifecycleScope.launch {
+            viewModel.allStateFlow.collectLatest {
                 adapter.submitList(it)
             }
+        }*/
+
+        viewModel.allHistory.observe(viewLifecycleOwner){
+            adapter.submitList(it)
         }
+
+        /*lifecycleScope.launch{
+            viewModel.allFlowHistory.collect() {
+                it.observe(viewLifecycleOwner){list->
+
+                    adapter.submitList(list)
+                }
+            }
+        }*/
 
         binding.btnGoGoogle.setOnClickListener {
             onClickSearch()
@@ -108,6 +126,109 @@ class SearchFragment : Fragment() {
         //Esto lo que hace es setear el boton enter en realizar la accion
         binding.tfSearch.onSearch { onClickSearch() }
     }
+
+    private fun indiviTime(textView: TextView, lastSearch: LastSearch, isAlive: Boolean){
+
+        /*lifecycleScope.launch{
+            while (false){
+                Log.d(TAG2, "lastSarch: $lastSearch")
+
+                val currentTimestamp = System.currentTimeMillis()
+                Log.d(TAG2, "currentTime: $currentTimestamp ")
+
+                val elementStamp = lastSearch.timestamp
+                Log.d(TAG2, "elementStamp: ${elementStamp} ")
+
+                val restTime = currentTimestamp - elementStamp
+                Log.d(TAG2, "restTime: $restTime ")
+
+                val timehelper = getTimeFromTimestamp(restTime)
+
+
+                Log.d(TAG2, "time: ${timehelper.number} ")
+                textView.text = timehelper.number.toString()
+                delay(1000L)
+            }
+            //como reinicio el while, para que tome la nueva lista
+        }*/
+
+    }
+
+    private fun takeTime(textView: TextView){
+
+            viewModel.allHistory.observe(viewLifecycleOwner) { list ->
+                Log.d(TAG2, "list: $list")
+                var restart = false
+                restart = true
+                lifecycleScope.launch{
+                    while (true){
+                        Log.d(TAG2, "list: $list")
+                        val currentTimestamp = System.currentTimeMillis()
+                        list.forEach {
+                            Log.d(TAG2, "currentTime: $currentTimestamp ")
+                            val elementStamp = it.timestamp
+                            Log.d(TAG2, "elementStamp: ${elementStamp} ")
+                            val restTime = currentTimestamp - elementStamp
+                            Log.d(TAG2, "restTime: $restTime ")
+                            val timehelper = getTimeFromTimestamp(restTime)
+
+
+                            Log.d(TAG2, "time: ${timehelper.number} ")
+                            textView.text = timehelper.number.toString()
+                        }
+                        delay(1000L)
+                    }
+                    //como reinicio el while, para que tome la nueva lista
+                }
+
+
+            }
+
+
+
+    }
+
+    private fun getTimeFromTimestamp(unformattedTimestamp: Long) : TimeHelper {
+        val seconds = unformattedTimestamp / 1000
+        val minutes = seconds.toInt() / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        val weeks = days / 7
+        val months = weeks / 4
+        val years = months / 12
+        val dumpList = listOf(
+            TimeHelper(years, "Years"),
+            TimeHelper(months, "Months"),
+            TimeHelper(weeks, "Weeks"),
+            TimeHelper(days, "Days"),
+            TimeHelper(hours, "Hours"),
+            TimeHelper(minutes, "Min"),
+            TimeHelper(seconds.toInt(), "Sec")
+        )
+        Log.d("aaa", "list of times: $dumpList")
+        try {
+            return run loop@{
+                dumpList.forEach { element ->
+                    if (element.number != 0) {
+                        return@loop element
+                    }
+                }
+            } as TimeHelper
+        } catch (e: Exception) {
+            Log.d("aaa", "error cast to TimeHelper: ${e.message}")
+            return TimeHelper(1, "Sec")
+        }
+    }
+
+    fun numer(textView: TextView,timeHelper: TimeHelper){
+        lifecycleScope.launch{
+            while (true){
+                textView.text = timeHelper.number.toString()
+            }
+        }
+
+    }
+
 
     //EDIT TEXT LISTENER
     private fun enableOrDisableButtonSearch() {

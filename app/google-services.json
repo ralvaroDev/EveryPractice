@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "63525739016",
+    "project_id": "sunoff-d6a55",
+    "storage_bucket": "sunoff-d6a55.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63525739016:android:3674f6d8973e7dfd548fbd",
+        "android_client_info": {
+          "package_name": "com.example.everypractice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "63525739016-5rlhugeudc3eitsh7j1ltqueqnilkfl5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXL4C_4jkN_Cfa0lVIc-SROZSAw2POwvc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "63525739016-5rlhugeudc3eitsh7j1ltqueqnilkfl5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

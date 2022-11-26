@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".start.login.LoginFragment"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="#181920"
+    tools:context=".start.login.LoginFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/notify_connection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="No internet Connection"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="0dp"
             android:layout_height="300dp"
-            android:src="@drawable/sticker_login"
+            android:padding="20dp"
+            android:src="@drawable/sticker_koala_movie"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -26,7 +39,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="32dp"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -40,7 +54,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:letterSpacing="0.01"
-                android:text="Login"
+                android:text="@string/login"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -48,38 +63,46 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tfl_login"
+                style="@style/TextAppTextField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Email ID"
+                android:hint="@string/email"
                 android:textColorHint="#959faf"
                 android:theme="@style/MyEditTextTheme2"
-                app:boxBackgroundColor="@color/white"
+                app:boxBackgroundColor="#262a34"
+                app:errorEnabled="true"
+                app:errorTextColor="#FF5D5D"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView3"
-                app:startIconDrawable="@drawable/ic_at_drawable"
+                app:startIconDrawable="@drawable/ic_at"
                 app:startIconTint="#828ea0">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tf_email_id"
+                    android:id="@+id/tf_email"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textEmailAddress"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/white" />
 
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tfl_password"
+                style="@style/TextAppTextField"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:textColorHint="#959faf"
                 android:theme="@style/MyEditTextTheme2"
-                app:boxBackgroundColor="@color/white"
+                app:boxBackgroundColor="#262a34"
+                app:endIconMode="password_toggle"
+                app:errorEnabled="true"
+                app:errorTextColor="#FF5D5D"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tfl_login"
@@ -91,22 +114,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPassword"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="Login"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:paddingVertical="16dp"
+                android:text="@string/sign_in"
                 android:textAllCaps="false"
                 android:textSize="16dp"
                 app:cornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tfl_password" />
+
+            <View
+                android:id="@+id/prevent_login"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:elevation="10dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_login"
+                app:layout_constraintEnd_toEndOf="@+id/btn_login"
+                app:layout_constraintStart_toStartOf="@+id/btn_login"
+                app:layout_constraintTop_toTopOf="@+id/btn_login" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -115,6 +151,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Or, login with..."
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_login" />
@@ -190,9 +227,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="New to iThickLogistics? "
+                android:paddingVertical="8dp"
+                android:paddingStart="8dp"
+                android:text="New over here? "
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView6"
+                app:layout_constraintEnd_toStartOf="@+id/tv_register"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
@@ -202,8 +242,10 @@
                 android:id="@+id/tv_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Register"
-                android:textColor="#105dcf"
+                android:paddingVertical="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/sign_up"
+                android:textColor="#4D90F4"
                 app:layout_constraintBottom_toBottomOf="@+id/textView5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -215,29 +257,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:elevation="10dp"
-                android:text="Forgot?"
-                android:textColor="#105dcf"
-                app:layout_constraintBottom_toBottomOf="@+id/tfl_login"
-                app:layout_constraintEnd_toEndOf="@+id/tfl_login"
-                app:layout_constraintTop_toTopOf="@+id/tfl_login" />
-
-            <ImageView
-                android:id="@+id/iv_fingerprint"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="32dp"
-                android:src="@drawable/ic_fingerprint"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                android:text="@string/forgot"
+                android:textColor="#4D90F4"
+                app:layout_constraintEnd_toEndOf="@+id/tfl_password"
+                app:layout_constraintTop_toBottomOf="@+id/tfl_password" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
 </ScrollView>

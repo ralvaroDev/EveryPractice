@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.everypractice.databinding.LastsearchListHistoryBinding
 import com.example.everypractice.prinoptions.search.data.LastSearch
+import com.example.everypractice.prinoptions.search.viewmodel.SearchViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -32,7 +36,9 @@ data class TimeHelper(
 class HistoryListAdapter(
     private val onHistoryClicked: (LastSearch)->Unit,
     private val onClickListener: (LastSearch)-> Unit,
-    private val onSwipeListener: (View, LastSearch) -> Unit
+    private val onSwipeListener: (View, LastSearch) -> Unit,
+    private val FlowNumber: (TextView, LastSearch, Boolean)->Unit,
+    private val searchViewModel: SearchViewModel
     ) :
     ListAdapter<LastSearch,HistoryListAdapter.HistoryViewHolder>(DiffCallBack){
 
@@ -41,27 +47,41 @@ class HistoryListAdapter(
 
     class HistoryViewHolder(private val binding: LastsearchListHistoryBinding):RecyclerView.ViewHolder(binding.root) {
 
+
+
         fun bind(
-            lastSearch:LastSearch,
+            lastSearch: LastSearch,
             onClickListener: (LastSearch)-> Unit,
             onHistoryClicked: (LastSearch)->Unit,
-            onSwipeListener: (View, LastSearch) -> Unit
+            onSwipeListener: (View, LastSearch) -> Unit,
+            FlowNumber: (TextView, LastSearch, Boolean)-> Unit,
+            searchViewModel: SearchViewModel
         ) {
 
             val timeHelper = getTimeFromTimestamp(lastSearch.timestamp)
             binding.apply {
                 historyElement.text = lastSearch.lastSearch
-                numberTime.text = timeHelper.number.toString()
-                textTime.text = timeHelper.numberIndicator
+                //numberTime.text = timeHelper.number.toString()
+                //textTime.text = timeHelper.numberIndicator
             }
             //ESTO NOS DEVUELVE LA FUNCION DE CLICKEO CADA QUE SE CLIQUEA
-            binding.deleteButton.setOnClickListener { onClickListener(lastSearch) }
+            binding.deleteButton.setOnClickListener {
+                onClickListener(lastSearch)
+                FlowNumber(binding.example, lastSearch, false)
+            }
             binding.textContainer.setOnClickListener {
                 //onClickListener(lastSearch)
                 onHistoryClicked(lastSearch)
             }
+            FlowNumber(binding.example,lastSearch, true)
+
             onSwipeListener(binding.historyCard,lastSearch)
+
+            binding.lastSearch = lastSearch
+            binding.viewModel = searchViewModel
+            binding.executePendingBindings()
         }
+
 
         private fun getTimeFromTimestamp(unformattedTimestamp: Long) : TimeHelper {
             val seconds = unformattedTimestamp / 1000
@@ -186,7 +206,9 @@ class HistoryListAdapter(
         holder.bind(current,
             onClickListener,
             onHistoryClicked,
-            onSwipeListener
+            onSwipeListener,
+            FlowNumber,
+            searchViewModel
         )
     }
 
