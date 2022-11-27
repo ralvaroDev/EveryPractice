@@ -1,6 +1,8 @@
 package com.example.everypractice.start.login
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,8 +35,7 @@ class SignUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //FULL BIND
 
-        binding.btnRegister.setOnClickListener {  goToStart() }
-
+        enableOrDisableButtonSearch()
         setup()
 
 
@@ -42,10 +43,9 @@ class SignUpFragment : Fragment() {
 
     private fun setup() {
         binding.btnRegister.setOnClickListener {
-            if (binding.tfRegisterEmailId.text!!.isNotEmpty() && binding.tfRegisterPassword.text!!.isNotEmpty()) {
-
+            if (binding.tfRegisterEmail.text!!.isNotEmpty() && binding.tfRegisterPassword.text!!.isNotEmpty()) {
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(
-                    binding.tfRegisterEmailId.text.toString(),
+                    binding.tfRegisterEmail.text.toString(),
                     binding.tfRegisterPassword.text.toString()
                 ).addOnCompleteListener {
                     if (it.isSuccessful) {
@@ -55,7 +55,6 @@ class SignUpFragment : Fragment() {
                         showAlert()
                     }
                 }
-
             }
         }
     }
@@ -66,13 +65,50 @@ class SignUpFragment : Fragment() {
             displayName = userName
             //photoUri = Uri.parse(profilePhoto)
         }
-
         user!!.updateProfile(profileUpdates)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     Timber.d("Update profile success!")
                 }
             }
+    }
+
+    //EDIT TEXT LISTENER
+    private fun enableOrDisableButtonSearch() {
+        binding.btnRegister.isEnabled = false
+        var email = false
+        var pass = false
+        var name = false
+        binding.tfRegisterEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                //Log.d(TAG, "onTextChanged: ${s.toString().trim()}")
+                email = LoginFragment.EMAIL_PATTERN.matches(s.toString())
+                binding.btnRegister.isEnabled = email && pass && name
+            }
+        })
+        binding.tfRegisterPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                pass = s.toString().trim { it <= ' ' }.isNotEmpty()
+                binding.btnRegister.isEnabled = email && pass && name
+            }
+        })
+
+        binding.tfRegisterName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                name = s.toString().trim { it <= ' ' }.isNotEmpty()
+                binding.btnRegister.isEnabled = email && pass && name
+            }
+        })
+
     }
 
     private fun showAlert() {
@@ -89,7 +125,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun goToLogin(email: String) {
-        findNavController().navigate(SignUpFragmentDirections.actionSignUpFragmentToLoginFragment(email = email))
+        findNavController().navigate(SignUpFragmentDirections.toLogin(email = email))
     }
 
 

@@ -1,34 +1,33 @@
 package com.example.everypractice.start
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.everypractice.R
 import com.example.everypractice.databinding.ActivityMainBinding
+import com.example.everypractice.prinoptions.HistoryApplication
 import com.example.everypractice.prinoptions.movies.ui.MoviesMainActivity
-import com.example.everypractice.start.datastore.UserPreferenceRepository
-import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 enum class ProviderType {
     BASIC
 }
 
-const val USER_PREFERENCE_NAME = "user_preferences"
-private val Context.dataStore by preferencesDataStore(
-    name = USER_PREFERENCE_NAME
-)
-
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
 
-    private lateinit var viewModel: MainViewModel
+
+
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(
+            NetworkStatusTracker(this),
+            (this.application as HistoryApplication).userPreferenceRepository
+        )
+    }
 
 
 
@@ -40,13 +39,24 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController= navHostFragment.navController
 
+        /*lifecycleScope.launchWhenCreated {
+            Timber.d("Init Scope")
+            viewModel.userPreferenceFlow.collectLatest {
+                if (it.userLastSession){
+                    Timber.d("Obtaining info of existUser")
+                    reload()
+                    Timber.d("EndScope")
+                }
+            }
+        }*/
+
 
         //TODO LA EXPLOTACION PORQUE USO VM EN MAS DE UNA VISTA
-        viewModel = ViewModelProvider(
+        /*viewModel = ViewModelProvider(
             this,
             MainViewModelFactory(NetworkStatusTracker(this),
                 UserPreferenceRepository(dataStore))
-        )[MainViewModel::class.java]
+        )[MainViewModel::class.java]*/
 
 
         /*viewModel.state.observe(this){ state ->
@@ -62,19 +72,16 @@ class MainActivity : AppCompatActivity() {
         //AQUI PONDREMOS EL INICIO DE SESION
     }
 
+    //TODO CREO QUE AQUI ESTA EL PROBLEMA DE LA RECREACION
+    //TODO PARA EL REPINTADO DE LAS LISTAS DE SEARCH, QUE FILTREMOS LEYENDO BIEN EL ESTADO, Y APLICANDO UN SHIMMER PARA EVITAR DOBLES
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launchWhenStarted {
-            viewModel.userPreferenceFlow.collectLatest {
-                if (it.userLastSession){
-                    reload()
-                }
-            }
-        }
+
     }
 
     private fun reload() {
             val intent = Intent(this,MoviesMainActivity::class.java)
+        Timber.d("Sending intent MovieActivity")
             startActivity(intent)
     }
 

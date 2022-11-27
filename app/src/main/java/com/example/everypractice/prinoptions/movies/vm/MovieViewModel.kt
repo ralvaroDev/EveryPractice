@@ -11,8 +11,9 @@ import timber.log.Timber
 
 enum class RequestMovieStatus { LOADING, ERROR, DONE }
 
+
 class MovieViewModel(
-    private val repository: FavouriteMovieRepository,
+    private val repository: FavouriteMovieRepository
 ) : ViewModel() {
 
     init {
@@ -343,7 +344,7 @@ class MovieViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class FavouriteMoviesViewModelFactory(
-    private val movieRepository: FavouriteMovieRepository,
+    private val movieRepository: FavouriteMovieRepository
 ) :
     ViewModelProvider.Factory {
 

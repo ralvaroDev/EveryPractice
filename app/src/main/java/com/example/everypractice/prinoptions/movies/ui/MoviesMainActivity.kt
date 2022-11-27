@@ -1,24 +1,19 @@
 package com.example.everypractice.prinoptions.movies.ui
 
 import android.os.Bundle
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat.Type.ime
 import androidx.core.view.WindowInsetsCompat.toWindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.navigation.NavController
-import androidx.core.content.getSystemService
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.example.everypractice.R
-import com.example.everypractice.consval.USER_NAME
-import com.example.everypractice.consval.USER_NAME_GOOGLE
 import com.example.everypractice.databinding.ActivityMoviesMainBinding
-import com.google.firebase.auth.FirebaseAuth
 
 class MoviesMainActivity : AppCompatActivity(), NavigationHost {
 
@@ -33,8 +28,6 @@ class MoviesMainActivity : AppCompatActivity(), NavigationHost {
             R.id.navigation_search,
             R.id.navigation_favourite
         )
-
-        var nameTitle = "No name yet"
     }
 
     lateinit var glide: Glide
@@ -50,11 +43,16 @@ class MoviesMainActivity : AppCompatActivity(), NavigationHost {
         binding = ActivityMoviesMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //TODO REVISAR SI ES UNA BUENA MANERA DE EVITAR EL RETROCESO NO DESEADO
+        val callback = this.onBackPressedDispatcher.addCallback(this){
+            finish()
+        }
+
 
 
         //checkIfDeviceIsRooted()
 
-        nameTitle = FirebaseAuth.getInstance().currentUser?.email!!
+
 
 
 
@@ -76,12 +74,6 @@ class MoviesMainActivity : AppCompatActivity(), NavigationHost {
                     navigateTo(R.id.navigation_search)
                 }*/
             }
-        }
-
-        if (savedInstanceState == null) {
-            currentNavId = navController.graph.startDestinationId
-            val requestedNavId = intent.getIntExtra(EXTRA_NAVIGATION_ID, currentNavId)
-            navigateTo(requestedNavId)
         }
 
         window.decorView.setOnApplyWindowInsetsListener { view, insets ->
@@ -133,12 +125,6 @@ class MoviesMainActivity : AppCompatActivity(), NavigationHost {
     override fun registerToolbarWithNavigation(toolbar: Toolbar) {
         val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
         toolbar.setupWithNavController(navController, appBarConfiguration)
-    }
-
-    //PARA REGRESAR A LA MISMA PANTALLA QUE LA QUE SE DEJO
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentNavId = navController.currentDestination?.id ?: NAV_ID_NONE
     }
 
     override fun onUserInteraction() {

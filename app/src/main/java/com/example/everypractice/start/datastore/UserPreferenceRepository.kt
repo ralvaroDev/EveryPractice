@@ -79,6 +79,4 @@ class UserPreferenceRepository(
             it[PreferencesKeys.EMAIL_USER] = emailUser
         }
     }
-
-
 }

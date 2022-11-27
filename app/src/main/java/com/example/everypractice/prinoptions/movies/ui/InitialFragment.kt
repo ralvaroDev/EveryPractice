@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import com.example.everypractice.consval.CURRENT_USER_NAME
 import com.example.everypractice.databinding.FragmentInitialBinding
 import com.example.everypractice.prinoptions.HistoryApplication
 import com.example.everypractice.prinoptions.movies.recycler.page.AdapterViewPageInitialRecommended
@@ -20,6 +20,8 @@ import com.example.everypractice.prinoptions.movies.vm.MovieViewModel
 import com.example.everypractice.start.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.abs
 
 
@@ -37,6 +39,11 @@ class InitialFragment : Fragment() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        Timber.d("ME ACABO DE CREAAAR")
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,11 +57,17 @@ class InitialFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        confirmUserIsIn()
+
         setupCustom()
 
         binding.btnNotification.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             onOutSession()
+            lifecycleScope.launch {
+                (requireActivity().application as HistoryApplication).userPreferenceRepository.updateUserLastSession(false,"","")
+            }
+            activity?.finish()
         }
 
         viewPager2 = binding.vp2DailyRecomendation
@@ -109,9 +122,28 @@ class InitialFragment : Fragment() {
             }*/
     }
 
+    private fun confirmUserIsIn() {
+        if (FirebaseAuth.getInstance().currentUser == null){
+            lifecycleScope.launch {
+                (requireActivity().application as HistoryApplication).userPreferenceRepository.updateUserLastSession(false,"","")
+            }
+
+            AlertDialog.Builder(requireContext()).setTitle("Session Expired")
+                .setMessage("The session has been closed").setPositiveButton("OK", null).create()
+                .show()
+            //TODO PUT A NOTIFICATION THAT THE SESSION IS CLOSED
+            activity?.finish()
+
+        }
+
+    }
+
     private fun setupCustom() {
-        binding.tvPerfilName.text = CURRENT_USER_NAME
-            //FirebaseAuth.getInstance().currentUser?.email.toString()
+        lifecycleScope.launch {
+            (requireActivity().application as HistoryApplication).userPreferenceRepository.userPreferenceFlow.collectLatest {
+                binding.tvPerfilName.text = it.emailUser
+            }
+        }
     }
 
     private fun onOutSession() {

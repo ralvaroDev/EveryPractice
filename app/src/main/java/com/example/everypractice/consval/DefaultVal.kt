@@ -5,8 +5,6 @@ import com.example.everypractice.R
 const val USER_NAME = "Alvaro R."
 const val USER_IMAGE = R.drawable.ic_user
 
-var CURRENT_USER_NAME = ""
-
 
 const val USER_NAME_GOOGLE = "user_name"
 

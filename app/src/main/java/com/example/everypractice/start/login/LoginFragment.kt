@@ -1,6 +1,5 @@
 package com.example.everypractice.start.login
 
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -14,22 +13,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.datastore.preferences.SharedPreferencesMigration
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.everypractice.consval.CURRENT_USER_NAME
 import com.example.everypractice.consval.USER_EMAIL_TEST
 import com.example.everypractice.consval.USER_PASSWORD_TEST
 import com.example.everypractice.databinding.FragmentLoginBinding
-import com.example.everypractice.helpers.extensions.gone
 import com.example.everypractice.helpers.extensions.inVisible
 import com.example.everypractice.helpers.extensions.visible
+import com.example.everypractice.prinoptions.HistoryApplication
 import com.example.everypractice.prinoptions.movies.ui.MoviesMainActivity
-import com.example.everypractice.start.*
-import com.example.everypractice.start.datastore.UserPreferenceRepository
+import com.example.everypractice.start.MainViewModel
+import com.example.everypractice.start.MainViewModelFactory
+import com.example.everypractice.start.MyState
+import com.example.everypractice.start.NetworkStatusTracker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.flow.collectLatest
@@ -37,16 +35,16 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.Executor
 
-private val Context.dataStore by preferencesDataStore(
+/*private val Context.dataStore by preferencesDataStore(
     name = USER_PREFERENCE_NAME,
     produceMigrations = { context ->
         listOf(SharedPreferencesMigration(context, USER_PREFERENCE_NAME))
     }
-)
+)*/
 
 class LoginFragment : Fragment() {
 
-    private lateinit var viewModel: MainViewModel
+    //private lateinit var viewModel: MainViewModel
     /*private val viewModel2: MainViewModel by lazy {
         ViewModelProvider(
             this,
@@ -66,6 +64,13 @@ class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: MainViewModel by activityViewModels {
+        MainViewModelFactory(
+            NetworkStatusTracker(requireContext()),
+            (requireActivity().application as HistoryApplication).userPreferenceRepository
+        )
+    }
 
     private var email = ""
     private var signInTries = 0
@@ -93,38 +98,31 @@ class LoginFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(NetworkStatusTracker(requireContext()),UserPreferenceRepository(requireContext().dataStore))
-        )[MainViewModel::class.java]
+        binding.tvForgot.setOnClickListener { goToRecoverPassword() }
+        binding.tvRegister.setOnClickListener { goToRegister() }
+        //TODO AGREGAR LUEGO UN BOTON PARA RECORDAR EL CORREO DEL USUARIO MEDIANTE PREFERENCE DATA STORE
 
 
         //TODO ESTA COSA TA RARA, tiene bug cada que chapa error de no connection y se activa el internet
         lifecycleScope.launch {
-            viewModel.stateHot.collectLatest{ state ->
+            viewModel.stateHot.collectLatest { state ->
                 Timber.d("Getting state")
-                    when (state) {
-                        MyState.Fetched -> {
-                            binding.preventLogin.gone()
-                            binding.notifyConnection.inVisible()
-                        }
-                        MyState.Error -> {
-                            binding.preventLogin.visible()
-                            binding.notifyConnection.visible()
-                        }
+                when (state) {
+                    MyState.Fetched -> {
+                        binding.notifyConnection.inVisible()
                     }
-
+                    MyState.Error -> {
+                        binding.notifyConnection.visible()
+                    }
                 }
 
+            }
+
         }
 
-        binding.preventLogin.setOnClickListener {
-            requireActivity().runOnUiThread {
-                Toast.makeText(requireContext(), "No internet connection!! :(", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
+
 
 
         enableOrDisableButtonSearch()
@@ -149,9 +147,7 @@ class LoginFragment : Fragment() {
         binding.tfPassword.setText(passwordTest, TextView.BufferType.SPANNABLE)
         binding.tfPassword.hint = passwordTest
 
-        binding.tvRegister.setOnClickListener {
-            goToRegister()
-        }
+
 
         binding.btnLogin.setOnClickListener {
             validateEntries(
@@ -165,21 +161,25 @@ class LoginFragment : Fragment() {
     //EDIT TEXT LISTENER
     private fun enableOrDisableButtonSearch() {
         binding.btnLogin.isEnabled = false
+        var email = false
+        var pass = false
         binding.tfEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 //Log.d(TAG, "onTextChanged: ${s.toString().trim()}")
-                binding.btnLogin.isEnabled = EMAIL_PATTERN.matches(s.toString())
+                email = EMAIL_PATTERN.matches(s.toString())
                 binding.tflLogin.isErrorEnabled = false
+                binding.btnLogin.isEnabled = email && pass
             }
         })
         binding.tfPassword.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.tfPassword.isEnabled = s.toString().trim { it <= ' ' }.isNotEmpty()
+                pass = s.toString().trim { it <= ' ' }.isNotEmpty()
                 binding.tflPassword.isErrorEnabled = false
+                binding.btnLogin.isEnabled = email && pass
             }
         })
     }
@@ -187,8 +187,8 @@ class LoginFragment : Fragment() {
 
     //FUN QUE VERIFICA EL PATRON DE INGRESO DEBE DEVOLVER BOOLEAN PARA ASI QUE ESTA FUN AVANCE EN ENVIAR PETICION
     private fun validateEntries(
-        inputEmail: String = USER_EMAIL_TEST,
-        inputPassword: String = USER_PASSWORD_TEST,
+        inputEmail: String,
+        inputPassword: String,
     ) {
 
 
@@ -200,12 +200,11 @@ class LoginFragment : Fragment() {
             inputPassword
         ).addOnCompleteListener {
             if (it.isSuccessful) {
-                CURRENT_USER_NAME = it.result.user?.displayName.toString()
                 lifecycleScope.launchWhenStarted {
-                    viewModel.updateExistUser(true)
+                    viewModel.updateExistUser(true, emailUser = it.result.user?.email.toString())
                 }
                 //TODO ESTO DEBE SER PARA GUARDAR CREDENCIALES EN DISPOSITIVO NO MEDIANTE ROOM
-                goToMovies(ProviderType.BASIC)
+                goToMovies()
                 signInTries = 0
             } else {
                 try {
@@ -224,10 +223,18 @@ class LoginFragment : Fragment() {
                     if (errorAuth == "ERROR_WRONG_PASSWORD") {
                         binding.tflPassword.error = "Wrong password"
                     }
-                } catch (e: Exception){
-                    Timber.d("Erro catching: ${ e.message }")
+                } catch (e: Exception) {
+                    Timber.d("Erro catching: ${e.message}")
                     var error = it.exception?.message
-                    AlertDialog.Builder(requireContext()).setTitle("Error").setMessage("No internet connection").setPositiveButton("OK", null).create().show()
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(requireContext(),
+                            "No internet connection!! :(",
+                            Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    AlertDialog.Builder(requireContext()).setTitle("Error")
+                        .setMessage("No internet connection").setPositiveButton("OK", null).create()
+                        .show()
                     Timber.d("Error net: ${error.toString()}")
                 }
 
@@ -237,9 +244,10 @@ class LoginFragment : Fragment() {
 
     }
 
-    private fun goToMovies(provider: ProviderType = ProviderType.BASIC) {
+    private fun goToMovies() {
         val intent = Intent(context, MoviesMainActivity::class.java)
         startActivity(intent)
+        activity?.finish()
     }
 
 
@@ -259,7 +267,12 @@ class LoginFragment : Fragment() {
 
 
     private fun goToRegister() {
-        val action = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()
+        val action = LoginFragmentDirections.toSignUp()
+        findNavController().navigate(action)
+    }
+
+    private fun goToRecoverPassword() {
+        val action = LoginFragmentDirections.toRecoverPassword()
         findNavController().navigate(action)
     }
 

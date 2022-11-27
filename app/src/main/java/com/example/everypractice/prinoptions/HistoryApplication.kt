@@ -1,10 +1,13 @@
 package com.example.everypractice.prinoptions
 
 import android.app.Application
+import android.content.Context
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.everypractice.prinoptions.movies.data.database.DatabaseDBFavouriteMovie
 import com.example.everypractice.prinoptions.movies.repository.FavouriteMovieRepository
 import com.example.everypractice.prinoptions.search.data.SearchDatabase
 import com.example.everypractice.prinoptions.search.repository.SearchRepository
+import com.example.everypractice.start.datastore.UserPreferenceRepository
 import timber.log.Timber
 
 class HistoryApplication : Application() {
@@ -17,6 +20,19 @@ class HistoryApplication : Application() {
     //APP MOVIE
     private val movieDatabase : DatabaseDBFavouriteMovie by lazy { DatabaseDBFavouriteMovie.getDatabase(this) }
     val movieRepository : FavouriteMovieRepository by lazy { FavouriteMovieRepository(movieDatabase.DaoFavouriteMovies()) }
+
+    private val USER_PREFERENCE_NAME = "user_preferences"
+    private val Context.dataStore by preferencesDataStore(
+        name = USER_PREFERENCE_NAME
+    )
+    val userPreferenceRepository : UserPreferenceRepository by lazy { UserPreferenceRepository(dataStore) }
+
+
+
+
+
+
+
 
     override fun onCreate() {
         super.onCreate()

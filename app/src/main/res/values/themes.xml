@@ -15,6 +15,7 @@
         <!-- Customize your theme here. -->
     </style>
 
+
     <style name="TextAppTextField">
         <item name="android:textColorHint">#dedddf</item>
         <item name="fontFamily">sans-serif</item>
@@ -82,5 +83,16 @@
         <item name="colorOnContainer">@color/purple_700</item>
     </style>
 
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+
+    <style name="AppTheme.Launcher" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/blue_app</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_temporal</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/blue_app</item>
+        <item name="windowSplashScreenAnimationDuration">1300</item>
+        <item name="postSplashScreenTheme">@style/Theme.EveryPractice</item>
+
+    </style>
 
 </resources>
+<!--<item name="android:windowSplashScreenBrandingImage"></item>-->
