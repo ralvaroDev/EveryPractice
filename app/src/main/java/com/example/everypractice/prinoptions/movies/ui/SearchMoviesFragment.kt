@@ -14,12 +14,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.everypractice.databinding.FragmentSearchMoviesBinding
-import com.example.everypractice.helpers.extensions.*
+import com.example.everypractice.helpers.extensions.gone
+import com.example.everypractice.helpers.extensions.visible
+import com.example.everypractice.prinoptions.HistoryApplication
 import com.example.everypractice.prinoptions.movies.recycler.MovieSearchAdapter
 import com.example.everypractice.prinoptions.movies.vm.FavouriteMoviesViewModelFactory
 import com.example.everypractice.prinoptions.movies.vm.MovieViewModel
 import com.example.everypractice.prinoptions.movies.vm.RequestMovieStatus
-import com.example.everypractice.prinoptions.HistoryApplication
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -72,23 +73,6 @@ class SearchMoviesFragment : Fragment() {
             goToIntermediateDetail(element.id, position,listSize)
         }
 
-        //Esto llama a la funcion que hace la peticion y emite el objeto de red que mapeamos a lista de pelis
-        /*lifecycleScope.launchWhenStarted {
-            sharedViewModel.movieListSearch.collectLatest {
-                adapter.submitList(it)
-            }
-
-
-            *//*sharedViewModel.searchMovieFlow(movieSearch).map {
-                it.results
-            }.collectLatest { listMovies->
-                adapter.submitList(listMovies)
-            }*//*
-        }*/
-
-        //EL DETALLE AQUI ES QUE AL PASAR AQUI, ESTE COLLECTOR SE HACE ANTES QUE EL OTRO QUE SE
-        //MANDA CON EL INTENT, ESE ES EL LIO, PERO CON EL DELAY SE SOLUCIONA TEMPORALMENTE
-        //AUNQUE EL PROBLEMA ES QUE SI DEMORA EN RECIBIR YA JUIMOS
         lifecycleScope.launchWhenStarted {
             sharedViewModel.requestMovieSearchStatus.collectLatest { status ->
                 Timber.d("MovieStatus in collector: $status")

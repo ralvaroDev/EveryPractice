@@ -38,15 +38,6 @@ class FavouriteMovieRepository(private val daoDatabaseFavouriteMovie: DaoDatabas
         return daoDatabaseFavouriteMovie.getDatabaseFavouriteMovieById(id)
     }
 
-    /*val getListOfRecommendedMoviesFromYourFavorites: Flow<List<DatabaseFavouriteMovie>> =
-        daoDatabaseFavouriteMovie.getListDatabaseFavouriteMoviesRecommended()*/
-
-/*    fun obtainListWords() = lastSearchDao.getWordsOfLastSearchList()
-
-    fun deleteLastSearchByWord(word: String) = lastSearchDao.deleteByWord(word)
-
-    fun updateLastSearchTimestamp(word: String, timestamp: Long) = lastSearchDao.updateLastSearchTimestamp(word, timestamp)*/
-
     @WorkerThread
     suspend fun insert(
         temporaryDetailMovie: TemporaryDetailMovie,

@@ -9,16 +9,12 @@ plugins {
 
 android {
     compileSdk 33
-
-
-
     defaultConfig {
         applicationId "com.example.everypractice"
         minSdk 21
         targetSdk 33
         versionCode 1
         versionName "1.0"
-        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

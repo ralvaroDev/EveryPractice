@@ -44,19 +44,6 @@ import java.util.concurrent.Executor
 
 class LoginFragment : Fragment() {
 
-    //private lateinit var viewModel: MainViewModel
-    /*private val viewModel2: MainViewModel by lazy {
-        ViewModelProvider(
-            this,
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    val networkStatusTracker = NetworkStatusTracker(requireContext())
-                    return MainViewModel(networkStatusTracker, UserPreferenceRepository()) as T
-                }
-            }
-        )[MainViewModel::class.java]
-    }*/
-
     companion object {
         val EMAIL_PATTERN = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
         private const val EMAIL = "email"

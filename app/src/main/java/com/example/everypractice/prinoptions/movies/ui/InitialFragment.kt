@@ -85,41 +85,7 @@ class InitialFragment : Fragment() {
         }
 
         setUpoTransformer()
-
-/*
-        //ELEMENTO INICIO EJEMPLO
-        sharedViewModel.temporaryFavouriteMovies.observe(viewLifecycleOwner){
-            binding.movieName.text=it.results[0].originalTitle
-            //Glide.with(this).load(it.results[0].posterUrl).into(binding.portada)
-            //SETEAR BIEN AQUI EL VALOR DE DIFUMINADO, MENOS VALOS MAS DIFU.... POR DEFECTO SE LE PONE EN [2,2]
-            *//*Glide.with(this).asBitmap().load(it.results[0].posterUrl).into(object : CustomTarget<Bitmap>(50,50){
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    binding.glass.setImageDrawable(BitmapDrawable(binding.glass.rootView.context.resources,resource))
-                }
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    binding.glass.setImageDrawable(null)
-                }
-            })*//*
-            binding.portada.load(it.results[0].posterUrl){
-                listener(
-                    onSuccess = { _, _ ->
-                        Toast.makeText(requireContext(), "Success Download image", Toast.LENGTH_SHORT).show()
-                    },
-                    onError = { request: ImageRequest, throwable: Throwable ->
-                        request.error
-                        Toast.makeText(requireContext(), "$throwable", Toast.LENGTH_SHORT).show()
-                    }
-                )
-                error(R.drawable.sticker_incorrect)
-            }
-            binding.glass.load(it.results[0].posterUrl){
-                    crossfade(750)
-                        .transformations(
-                            BlurTransformation(requireContext(), radius = 18f)
-                        )
-                        .build()
-
-            }*/
+        
     }
 
     private fun confirmUserIsIn() {
