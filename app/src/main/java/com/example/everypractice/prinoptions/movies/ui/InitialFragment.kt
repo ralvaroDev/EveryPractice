@@ -85,7 +85,7 @@ class InitialFragment : Fragment() {
         }
 
         setUpoTransformer()
-        
+
     }
 
     private fun confirmUserIsIn() {
