@@ -79,6 +79,7 @@ class SignUpFragment : Fragment() {
         var email = false
         var pass = false
         var name = false
+        var length : Boolean
         binding.tfRegisterEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -95,7 +96,8 @@ class SignUpFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 pass = s.toString().trim { it <= ' ' }.isNotEmpty()
-                binding.btnRegister.isEnabled = email && pass && name
+                length = s.toString().length > 6
+                binding.btnRegister.isEnabled = email && pass && name && length
             }
         })
 

@@ -1,6 +1,8 @@
 package com.example.everypractice.start.login
 
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,7 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.everypractice.databinding.FragmentRecoverPasswordBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.ktx.actionCodeSettings
+import com.google.firebase.dynamiclinks.ktx.dynamicLink
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.dynamiclinks.ktx.navigationInfoParameters
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
 class RecoverPasswordFragment : Fragment() {
@@ -35,40 +41,70 @@ class RecoverPasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         enableOrDisableButtonSearch()
 
+        /*val emailTest = USER_EMAIL_TEST
+        binding.tfEmail.setText(emailTest, TextView.BufferType.SPANNABLE)*/
+
         binding.btnRecoveryPassword.setOnClickListener {
-            recoveryFun(
+            sendEmailToResetPassword(
                 binding.tfEmail.text.toString()
             )
         }
 
-
     }
 
-    private fun recoveryFun(email: String) {
-        val instance = FirebaseAuth.getInstance()
-        instance.sendPasswordResetEmail(email).addOnCompleteListener {
-            if (it.isSuccessful) {
-                showDoneRecover()
-            } else {
-                try {
-                    var errorAuth = (it.exception as FirebaseAuthException).errorCode
-                    AlertDialog.Builder(requireContext()).setTitle("Error")
-                        .setMessage(errorAuth).setPositiveButton("Try again", null).create()
-                        .show()
-                } catch (e: Exception) {
-                    Timber.d("Error RECOVERY catching: ${e.message}")
-                    var error = it.exception?.message
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(),
-                            "No internet connection!! :(",
-                            Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    Timber.d("Error RECOVERY net: ${error.toString()}")
-                }
+    private fun dynamicLinkCreator(email: String) {
+        //TODO IMPLEMENTACION DYNAMIC LINK
+        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
+            link = Uri.parse("https://sunoff.page.link/recoverypassword?email=$email")
+            domainUriPrefix = "https://sunoff.page.link"
+            navigationInfoParameters {
+                forcedRedirectEnabled = true
             }
         }
+        val dynamicLinkUri = dynamicLink.uri
+
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, dynamicLinkUri.toString())
+            type = "text/plain"
+        }
+        //https://sunoff-d6a55.firebaseapp.com
+        startActivity(sendIntent)
+        Timber.d("Dynamic Link: $dynamicLinkUri")
+
+        val actionCode = actionCodeSettings {
+            url = dynamicLinkUri.toString()
+            handleCodeInApp = true
+        }
     }
+
+    private fun sendEmailToResetPassword(email: String) {
+
+        val instance = FirebaseAuth.getInstance()
+        instance.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                val sendIntent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_APP_EMAIL)
+                }
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(),
+                        "Sending Petition",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                }
+                Timber.d("Send Password manage")
+                sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                startActivity(shareIntent)
+                requireActivity().finish()
+
+            }
+            .addOnFailureListener {
+                Timber.d("Error sending: ${it.message} -- LocalizedMessage: ${it.localizedMessage}")
+            }
+    }
+
 
     private fun showDoneRecover() {
         val builder = AlertDialog.Builder(requireContext())
@@ -98,7 +134,7 @@ class RecoverPasswordFragment : Fragment() {
         })
     }
 
-    private fun goToLogin(){
+    private fun goToLogin() {
         val action = RecoverPasswordFragmentDirections.toLogin("")
         findNavController().navigate(action)
     }
