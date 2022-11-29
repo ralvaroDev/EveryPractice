@@ -7,7 +7,7 @@
     android:animateLayoutChanges="true"
     android:background="@color/blue_app"
     tools:ignore="ContentDescription"
-    tools:context=".prinoptions.movies.ui.DetailMovieFragment">
+    tools:context=".ui.search.DetailMovieFragment">
 
     <ImageView
         android:id="@+id/ic_back"

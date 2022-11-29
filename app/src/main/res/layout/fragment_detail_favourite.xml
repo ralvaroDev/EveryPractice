@@ -7,7 +7,7 @@
     android:animateLayoutChanges="true"
     android:background="@color/blue_app"
     tools:ignore="ContentDescription"
-    tools:context=".prinoptions.movies.ui.DetailFavouriteFragment">
+    tools:context=".ui.search.DetailFavouriteFragment">
 
     <include
         android:id="@+id/layout_detail_of_favourite_movie_loader"

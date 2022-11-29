@@ -7,7 +7,7 @@
 
         <variable
             name="detail_movie"
-            type="com.example.everypractice.prinoptions.movies.data.domain.TemporaryDetailMovie" />
+            type="com.example.everypractice.data.domain.TemporaryDetailMovie" />
 
     </data>
 

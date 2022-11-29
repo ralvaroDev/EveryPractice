@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".prinoptions.movies.ui.favourite.FavouriteStoredFragment">
+    tools:context=".ui.favourite.FavouriteStoredFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_favourite_movies_saved"

@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.everypractice.prinoptions.movies.ui.InitialFragment"
+        android:name="com.example.everypractice.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_initial">
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/to_navigation_favourite"
             app:destination="@id/navigation_favourite" />
@@ -19,9 +19,9 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_favourite"
-        android:name="com.example.everypractice.prinoptions.movies.ui.FavouriteMoviesFragment"
+        android:name="com.example.everypractice.ui.favourite.FavouritesFragment"
         android:label="fragment_favourite_movies"
-        tools:layout="@layout/fragment_favourite_movies" >
+        tools:layout="@layout/fragment_favourites" >
         <action
             android:id="@+id/action_favouriteMoviesFragment_to_navigation_home"
             app:destination="@id/navigation_home"
@@ -30,9 +30,9 @@
     </fragment>
     <fragment
         android:id="@+id/searchMoviesFragment"
-        android:name="com.example.everypractice.prinoptions.movies.ui.SearchMoviesFragment"
+        android:name="com.example.everypractice.ui.search.SearchResultFragment"
         android:label="fragment_search_movies"
-        tools:layout="@layout/fragment_search_movies" >
+        tools:layout="@layout/fragment_search_result" >
         <argument
             android:name="movie"
             app:argType="string" />
@@ -47,7 +47,7 @@
     </fragment>
     <fragment
         android:id="@+id/intermediateDetailFragment"
-        android:name="com.example.everypractice.prinoptions.movies.ui.IntermediateDetailFragment"
+        android:name="com.example.everypractice.ui.search.IntermediateDetailFragment"
         android:label="fragment_intermediate_detail"
         tools:layout="@layout/fragment_intermediate_detail" >
         <argument
@@ -67,7 +67,7 @@
     </fragment>
     <fragment
         android:id="@+id/detailMovieFragment"
-        android:name="com.example.everypractice.prinoptions.movies.ui.DetailMovieFragment"
+        android:name="com.example.everypractice.ui.search.DetailMovieFragment"
         android:label="fragment_detail_movie"
         tools:layout="@layout/fragment_detail_movie" >
         <argument
@@ -79,7 +79,7 @@
     </fragment>
     <fragment
         android:id="@+id/detailFavouriteFragment"
-        android:name="com.example.everypractice.prinoptions.movies.ui.DetailFavouriteFragment"
+        android:name="com.example.everypractice.ui.search.DetailFavouriteFragment"
         android:label="fragment_detail_favourite"
         tools:layout="@layout/fragment_detail_favourite" >
         <action
@@ -102,9 +102,9 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_search"
-        android:name="com.example.everypractice.prinoptions.movies.ui.ListGenresSearchFragment"
+        android:name="com.example.everypractice.ui.search.SearchFragment"
         android:label="fragment_list_genres_search"
-        tools:layout="@layout/fragment_list_genres_search" >
+        tools:layout="@layout/fragment_search" >
         <action
             android:id="@+id/to_search_fragment"
             app:destination="@id/searchMoviesFragment" />

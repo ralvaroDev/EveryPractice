@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#181920"
-    tools:context=".start.login.LoginFragment">
+    tools:context=".ui.signin.login.LoginFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -126,6 +126,7 @@
                 android:layout_marginTop="8dp"
                 android:paddingVertical="16dp"
                 android:text="@string/sign_in"
+                android:enabled="false"
                 android:textAllCaps="false"
                 android:textColor="@drawable/selector_button_state"
                 android:textSize="16dp"

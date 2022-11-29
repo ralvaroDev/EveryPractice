@@ -7,11 +7,11 @@
 
         <variable
             name="viewModel"
-            type="com.example.everypractice.prinoptions.movies.vm.MovieViewModel"/>
+            type="com.example.everypractice.ui.movies.vm.MovieViewModel"/>
 
         <variable
             name="movie"
-            type="com.example.everypractice.prinoptions.movies.data.domain.TemporarySearchMovieElement" />
+            type="com.example.everypractice.data.domain.TemporarySearchMovieElement" />
         
     </data>
 

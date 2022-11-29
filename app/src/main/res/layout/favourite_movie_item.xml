@@ -7,7 +7,7 @@
 
         <variable
             name="permanentMovie"
-            type="com.example.everypractice.prinoptions.movies.data.domain.PermanentFavouriteMovies" />
+            type="com.example.everypractice.data.domain.PermanentFavouriteMovies" />
 
     </data>
 
