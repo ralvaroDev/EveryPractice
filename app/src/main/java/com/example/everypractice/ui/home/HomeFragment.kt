@@ -13,11 +13,13 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.example.everypractice.databinding.FragmentHomeBinding
-import com.example.everypractice.ui.signin.LoginActivity
 import com.example.everypractice.ui.MainApplication
 import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
 import com.example.everypractice.ui.movies.vm.MovieViewModel
+import com.example.everypractice.ui.signin.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -103,11 +105,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCustom() {
-        lifecycleScope.launch {
-            (requireActivity().application as MainApplication).userPreferenceRepository.userPreferenceFlow.collectLatest {
-                binding.tvPerfilName.text = it.emailUser
-            }
-        }
+        binding.tvPerfilName.text = Firebase.auth.currentUser?.displayName
     }
 
     private fun onOutSession() {

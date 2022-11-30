@@ -1,5 +1,6 @@
 package com.example.everypractice.ui.signin.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,9 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.everypractice.consval.USER_NAME
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.everypractice.databinding.FragmentSignUpBinding
+import com.example.everypractice.ui.MainActivity
+import com.example.everypractice.ui.MainApplication
+import com.example.everypractice.ui.signin.LoginFragmentViewModel
+import com.example.everypractice.ui.signin.MainViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -23,6 +28,12 @@ class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: LoginFragmentViewModel by activityViewModels {
+        MainViewModelFactory(
+            (requireActivity().application as MainApplication).userPreferenceRepository
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -33,34 +44,43 @@ class SignUpFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //FULL BIND
+        super.onViewCreated(view, savedInstanceState)
 
         enableOrDisableButtonSearch()
-        setup()
-
-
+        binding.btnRegister.setOnClickListener {
+            signUpSetter()
+        }
     }
 
-    private fun setup() {
-        binding.btnRegister.setOnClickListener {
-            if (binding.tfRegisterEmail.text!!.isNotEmpty() && binding.tfRegisterPassword.text!!.isNotEmpty()) {
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(
-                    binding.tfRegisterEmail.text.toString(),
-                    binding.tfRegisterPassword.text.toString()
-                ).addOnCompleteListener {
+    private fun signUpSetter() {
+        val email = binding.tfRegisterEmail.text.toString()
+        val password = binding.tfRegisterPassword.text.toString()
+        val name = binding.tfRegisterName.text.toString()
+
+        val instance = Firebase.auth
+        if (email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty()) {
+            instance.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        updateProfile(USER_NAME)
-                        goToLogin(it.result.user?.email!!)
+                        lifecycleScope.launchWhenStarted {
+                            viewModel.updateExistUser(true,
+                                emailUser = it.result.user?.email.toString())
+                        }
+                        //TODO, PARA VERIFICAR SI ES NUEVO USUARIO O INGRESA A UN LUGAR SIN DATOS, QUE DEPENDA INICIALMENTE DEL ONBOARDING PARA QUE DESCARGUE
+                        // DATOS, Y USEMOS MEJOR EL CURRENT USER DEL PREFERENCE PARA DEFINIR SI ES UN USUARIO DIFERENTE AL QUE LOS DATOS ESTAN ALMACENADOS, Y CON ESTE NUEVAMENTE HACER LA PETICION DE DATOS
+                        //POR AHORA QUE EL IDENTIFICADOR SEA EL EMAIL, LUEGO SE PUEDE HACER PARA COMPARTIR USUARIOS Y CON ESTE SE CREE UN CODIGO MAS BONITO Y NO VER CONSTANTEMENTE EL CORREO
+                        //ERROR TAMBIEN Y NOSE SI SOLO DE PRODUCT, PERO CUANDO RELANSO LA APP CON LA SESION ABVIERTO Y MATO LA CUENTA DESDE GOOGLE SIGUE PASANDO NORMAL
+                        //viewModel.createUser(email)
+                        updateProfile(instance, name)
                     } else {
                         showAlert()
                     }
                 }
-            }
         }
     }
 
-    private fun updateProfile(userName: String) {
-        val user = Firebase.auth.currentUser
+    private fun updateProfile(instance: FirebaseAuth, userName: String) {
+        val user = instance.currentUser
         val profileUpdates = userProfileChangeRequest {
             displayName = userName
             //photoUri = Uri.parse(profilePhoto)
@@ -69,8 +89,15 @@ class SignUpFragment : Fragment() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     Timber.d("Update profile success!")
+                    goToMainActivity()
                 }
             }
+    }
+
+    private fun goToMainActivity() {
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     //EDIT TEXT LISTENER
@@ -121,11 +148,5 @@ class SignUpFragment : Fragment() {
         val dialog : AlertDialog = builder.create()
         dialog.show()
     }
-
-
-    private fun goToLogin(email: String) {
-        findNavController().navigate(SignUpFragmentDirections.toLogin())
-    }
-
 
 }

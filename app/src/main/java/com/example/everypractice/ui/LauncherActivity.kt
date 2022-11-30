@@ -24,5 +24,11 @@ class LauncherActivity : AppCompatActivity() {
                 finish()
             }
         }
+
+        /*if (Firebase.auth.currentUser != null){
+            startActivity(Intent(this@LauncherActivity, MoviesMainActivity::class.java))
+        } else {
+            startActivity(Intent(this@LauncherActivity, MainActivity::class.java))
+        }*/
     }
 }
