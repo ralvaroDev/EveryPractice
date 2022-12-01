@@ -27,6 +27,12 @@
             app:destination="@id/navigation_home"
             app:popUpTo="@id/navigation_home"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/to_detail_movie_fragment"
+            app:destination="@id/detailFavouriteFragment" />
+        <argument
+            android:name="fromtab"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/searchMoviesFragment"
@@ -83,7 +89,7 @@
         android:label="fragment_detail_favourite"
         tools:layout="@layout/fragment_detail_favourite" >
         <action
-            android:id="@+id/action_detailFavouriteFragment_to_favouriteMoviesFragment"
+            android:id="@+id/to_navigation_favourite"
             app:destination="@id/navigation_favourite"
             app:popUpTo="@id/navigation_favourite"
             app:popUpToInclusive="true" />

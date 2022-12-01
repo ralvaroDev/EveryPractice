@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.everypractice.data.domain.GenresMovies
+import com.example.everypractice.data.models.GenresMovies
 import com.example.everypractice.databinding.FragmentSearchBinding
-import com.example.everypractice.ui.MainApplication
+import com.example.everypractice.MainApplication
 import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
 import com.example.everypractice.ui.movies.vm.MovieViewModel
 import com.example.everypractice.ui.movies.vm.RequestMovieStatus

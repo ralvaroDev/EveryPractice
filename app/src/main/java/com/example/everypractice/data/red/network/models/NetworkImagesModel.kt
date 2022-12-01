@@ -1,9 +1,9 @@
 package com.example.everypractice.data.red.network.models
 
 import com.example.everypractice.consval.BASE_BACKGROUND_IMAGE_URL
-import com.example.everypractice.data.domain.TemporaryBackdropsElement
-import com.example.everypractice.data.domain.TemporaryImageMovie
-import com.example.everypractice.data.domain.TemporaryPosterElement
+import com.example.everypractice.data.models.TemporaryBackdropsElement
+import com.example.everypractice.data.models.TemporaryImageMovie
+import com.example.everypractice.data.models.TemporaryPosterElement
 import com.google.gson.annotations.SerializedName
 
 data class NetworkImagesMovieContainer(

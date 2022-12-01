@@ -1,4 +1,4 @@
-package com.example.everypractice.data.domain
+package com.example.everypractice.data.models
 
 data class TemporarySearchMovie(
     var page: Int? = null,

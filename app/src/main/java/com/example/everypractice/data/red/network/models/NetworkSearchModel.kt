@@ -2,8 +2,8 @@ package com.example.everypractice.data.red.network.models
 
 import com.example.everypractice.consval.BASE_BACKGROUND_IMAGE_URL
 import com.example.everypractice.consval.BASE_POSTER_IMAGE_URL
-import com.example.everypractice.data.domain.TemporarySearchMovie
-import com.example.everypractice.data.domain.TemporarySearchMovieElement
+import com.example.everypractice.data.models.TemporarySearchMovie
+import com.example.everypractice.data.models.TemporarySearchMovieElement
 import com.google.gson.annotations.SerializedName
 
 data class NetworkSearchMoviesContainer(

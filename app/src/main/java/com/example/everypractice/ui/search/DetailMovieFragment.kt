@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.everypractice.databinding.FragmentDetailMovieBinding
 import com.example.everypractice.utils.util.getTransformationIdsToGenres
-import com.example.everypractice.ui.MainApplication
+import com.example.everypractice.MainApplication
 import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
 import com.example.everypractice.ui.movies.vm.MovieViewModel
 import com.example.everypractice.ui.movies.vm.RequestMovieStatus

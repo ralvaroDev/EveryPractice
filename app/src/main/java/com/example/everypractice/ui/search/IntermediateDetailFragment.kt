@@ -1,30 +1,24 @@
 package com.example.everypractice.ui.search
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.addCallback
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.CompositePageTransformer
-import androidx.viewpager2.widget.MarginPageTransformer
-import androidx.viewpager2.widget.ViewPager2
-import coil.load
-import coil.request.CachePolicy
-import coil.transform.BlurTransformation
-import com.example.everypractice.databinding.FragmentIntermediateDetailBinding
-import com.example.everypractice.ui.MainApplication
-import com.example.everypractice.data.domain.TemporarySearchMovieElement
-import com.example.everypractice.trash.AdapterViewPageIntermediate
-import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
-import com.example.everypractice.ui.movies.vm.MovieViewModel
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
-import kotlin.math.abs
+import android.os.*
+import android.view.*
+import androidx.activity.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import androidx.navigation.fragment.*
+import androidx.viewpager2.widget.*
+import coil.*
+import coil.request.*
+import coil.transform.*
+import com.example.everypractice.*
+import com.example.everypractice.data.models.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.trash.*
+import com.example.everypractice.ui.movies.vm.*
+import com.google.android.material.snackbar.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
+import kotlin.math.*
 
 
 class IntermediateDetailFragment : Fragment() {

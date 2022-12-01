@@ -1,28 +1,20 @@
 package com.example.everypractice.ui.search
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.addCallback
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.example.everypractice.databinding.FragmentSearchResultBinding
-import com.example.everypractice.helpers.extensions.gone
-import com.example.everypractice.helpers.extensions.visible
-import com.example.everypractice.ui.MainApplication
-import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
-import com.example.everypractice.ui.movies.vm.MovieViewModel
-import com.example.everypractice.ui.movies.vm.RequestMovieStatus
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import android.os.*
+import android.view.*
+import android.view.inputmethod.*
+import android.widget.*
+import androidx.activity.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import androidx.navigation.fragment.*
+import com.example.everypractice.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.helpers.extensions.*
+import com.example.everypractice.ui.movies.vm.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
 
 class SearchResultFragment : Fragment() {
 

@@ -1,22 +1,22 @@
 package com.example.everypractice.ui
 
-import android.os.Bundle
-import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import android.os.*
+import androidx.activity.*
+import androidx.appcompat.app.*
+import androidx.appcompat.widget.*
+import androidx.core.view.*
 import androidx.core.view.WindowInsetsCompat.Type.ime
 import androidx.core.view.WindowInsetsCompat.toWindowInsetsCompat
-import androidx.core.view.isGone
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import com.bumptech.glide.Glide
+import androidx.navigation.*
+import androidx.navigation.fragment.*
+import androidx.navigation.ui.*
+import com.bumptech.glide.*
 import com.example.everypractice.R
-import com.example.everypractice.databinding.ActivityMainBinding
-import com.example.everypractice.ui.movies.ui.MainNavigationFragment
-import com.example.everypractice.ui.movies.ui.NavigationHost
+import com.example.everypractice.databinding.*
+import com.example.everypractice.ui.movies.ui.*
+import dagger.hilt.android.*
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationHost {
 
     companion object{

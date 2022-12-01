@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.everypractice.data.domain.TemporaryStaffMovie
+import com.example.everypractice.data.models.TemporaryStaffMovie
 import com.example.everypractice.databinding.ItemStaffMovieBinding
 
 class StaffDetailsAdapter(

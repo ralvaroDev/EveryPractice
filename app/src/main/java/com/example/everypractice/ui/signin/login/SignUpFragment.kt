@@ -1,38 +1,28 @@
 package com.example.everypractice.ui.signin.login
 
-import android.content.Intent
-import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import com.example.everypractice.databinding.FragmentSignUpBinding
-import com.example.everypractice.ui.MainActivity
-import com.example.everypractice.ui.MainApplication
-import com.example.everypractice.ui.signin.LoginFragmentViewModel
-import com.example.everypractice.ui.signin.MainViewModelFactory
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
-import com.google.firebase.ktx.Firebase
-import timber.log.Timber
+import android.content.*
+import android.os.*
+import android.text.*
+import android.view.*
+import androidx.appcompat.app.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.ui.*
+import com.example.everypractice.ui.signin.*
+import com.google.firebase.auth.*
+import com.google.firebase.auth.ktx.*
+import com.google.firebase.ktx.*
+import dagger.hilt.android.*
+import timber.log.*
 
-
+@AndroidEntryPoint
 class SignUpFragment : Fragment() {
 
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LoginFragmentViewModel by activityViewModels {
-        MainViewModelFactory(
-            (requireActivity().application as MainApplication).userPreferenceRepository
-        )
-    }
+    private val viewModel: LoginFragmentViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +39,19 @@ class SignUpFragment : Fragment() {
         enableOrDisableButtonSearch()
         binding.btnRegister.setOnClickListener {
             signUpSetter()
+
+            viewModel.startFakeSignIn(
+                binding.tfRegisterEmail.text.toString(),
+                binding.tfRegisterPassword.text.toString(),
+                binding.tfRegisterName.text.toString()
+            )
         }
+
+
+
     }
+
+
 
     private fun signUpSetter() {
         val email = binding.tfRegisterEmail.text.toString()

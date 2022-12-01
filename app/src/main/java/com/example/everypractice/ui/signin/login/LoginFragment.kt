@@ -1,46 +1,44 @@
 package com.example.everypractice.ui.signin.login
 
-import android.content.DialogInterface
-import android.content.Intent
-import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.example.everypractice.consval.USER_EMAIL_TEST
-import com.example.everypractice.consval.USER_PASSWORD_TEST
-import com.example.everypractice.databinding.FragmentLoginBinding
-import com.example.everypractice.ui.MainActivity
-import com.example.everypractice.ui.MainApplication
-import com.example.everypractice.ui.signin.LoginFragmentViewModel
-import com.example.everypractice.ui.signin.MainViewModelFactory
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import timber.log.Timber
+import android.content.*
+import android.os.*
+import android.text.*
+import android.view.*
+import android.widget.*
+import androidx.appcompat.app.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import androidx.navigation.fragment.*
+import com.example.everypractice.consval.*
+import com.example.everypractice.data.domain.onboarding.*
+import com.example.everypractice.data.repository.UserResponseStatus.DONE
+import com.example.everypractice.databinding.*
+import com.example.everypractice.ui.*
+import com.example.everypractice.ui.StartView.LOGIN
+import com.example.everypractice.ui.signin.*
+import com.google.firebase.auth.*
+import com.google.firebase.auth.ktx.*
+import com.google.firebase.ktx.*
+import dagger.hilt.android.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
+import javax.inject.*
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     companion object {
         val EMAIL_PATTERN = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
     }
 
+    @Inject
+    lateinit var initialStateActionUseCase: InitialStateActionUseCase
+
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LoginFragmentViewModel by activityViewModels {
-        MainViewModelFactory(
-            (requireActivity().application as MainApplication).userPreferenceRepository
-        )
-    }
+    private val viewModel: LoginFragmentViewModel by activityViewModels()
 
     private var signInTries = 0
 
@@ -70,11 +68,35 @@ class LoginFragment : Fragment() {
         binding.tfPassword.hint = passwordTest
 
         binding.btnLogin.setOnClickListener {
-            validateEntries(
+            /*validateEntries(
+                binding.tfEmail.text.toString(),
+                binding.tfPassword.text.toString()
+            )*/
+            viewModel.startFakeLogin(
                 binding.tfEmail.text.toString(),
                 binding.tfPassword.text.toString()
             )
         }
+        lifecycleScope.launch {
+            viewModel.nav.collectLatest {
+                when (it) {
+                    DONE -> {
+                        val intent = Intent(requireContext(),MainActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
+                    }
+                    else -> {
+                        Timber.d("Receive error en UI, no jump")
+                    }
+                }
+            }
+
+        }
+        //TODO BUGSITO
+        lifecycleScope.launch {
+            initialStateActionUseCase(LOGIN)
+        }
+
 
     }
 
@@ -116,9 +138,11 @@ class LoginFragment : Fragment() {
                 } catch (e: Exception) {
                     Timber.d("Error catching: ${e.message} | ${it.exception?.message}")
                     requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(),
+                        Toast.makeText(
+                            requireContext(),
                             "No internet connection!! :(",
-                            Toast.LENGTH_SHORT)
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                 }
@@ -168,7 +192,8 @@ class LoginFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 emailWithValidPattern = EMAIL_PATTERN.matches(s.toString())
                 binding.tflLogin.isErrorEnabled = false
-                binding.btnLogin.isEnabled = emailWithValidPattern && passWithValidPattern && passLengthWithPattern
+                binding.btnLogin.isEnabled =
+                    emailWithValidPattern && passWithValidPattern && passLengthWithPattern
             }
         })
 
@@ -179,7 +204,8 @@ class LoginFragment : Fragment() {
                 passWithValidPattern = s.toString().trim { it <= ' ' }.isNotEmpty()
                 passLengthWithPattern = s.toString().length > 6
                 binding.tflPassword.isErrorEnabled = false
-                binding.btnLogin.isEnabled = emailWithValidPattern && passWithValidPattern && passLengthWithPattern
+                binding.btnLogin.isEnabled =
+                    emailWithValidPattern && passWithValidPattern && passLengthWithPattern
             }
         })
     }

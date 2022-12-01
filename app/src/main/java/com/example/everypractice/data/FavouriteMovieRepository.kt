@@ -4,7 +4,7 @@ import androidx.annotation.WorkerThread
 import com.example.everypractice.data.database.DaoDatabaseFavouriteMovie
 import com.example.everypractice.data.database.DatabaseFavouriteMovie
 import com.example.everypractice.data.database.asDomainModel
-import com.example.everypractice.data.domain.*
+import com.example.everypractice.data.models.*
 import com.example.everypractice.data.red.MovieApi
 import com.example.everypractice.data.red.network.models.NetworkMultiSearchContainer
 import com.example.everypractice.data.red.network.models.asTemporaryDetailDomainModel

@@ -1,34 +1,52 @@
 package com.example.everypractice.ui
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.content.*
+import android.os.*
+import androidx.activity.*
+import androidx.appcompat.app.*
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
-import com.example.everypractice.ui.signin.LoginActivity
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import androidx.lifecycle.*
+import com.example.everypractice.ui.StartView.*
+import com.example.everypractice.ui.signin.*
+import dagger.hilt.android.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
 
+@AndroidEntryPoint
 class LauncherActivity : AppCompatActivity() {
+
+    private val viewModel: LauncherViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val screenSplash = installSplashScreen()
         super.onCreate(savedInstanceState)
-        screenSplash.setKeepOnScreenCondition{ true }
+        screenSplash.setKeepOnScreenCondition { true }
 
         lifecycleScope.launch {
-            (this@LauncherActivity.application as MainApplication).userPreferenceRepository.userPreferenceFlow.collectLatest {
-                when(it.userLastSession){
-                    true -> startActivity(Intent(this@LauncherActivity, MainActivity::class.java))
-                    false -> startActivity(Intent(this@LauncherActivity, LoginActivity::class.java))
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.launchDestination.collectLatest { view ->
+                    when (view) {
+                        ONBOARDING -> Timber.d("Should start with onboarding")
+                        LOGIN -> {
+                            startActivity(
+                                Intent(this@LauncherActivity, LoginActivity::class.java).addFlags()
+                            ).also { finish() }
+                        }
+                        MAIN -> {
+                            startActivity(
+                                Intent(this@LauncherActivity, MainActivity::class.java).addFlags()
+                            ).also { finish() }
+                        }
+                    }
                 }
-                finish()
             }
         }
 
-        /*if (Firebase.auth.currentUser != null){
-            startActivity(Intent(this@LauncherActivity, MoviesMainActivity::class.java))
-        } else {
-            startActivity(Intent(this@LauncherActivity, MainActivity::class.java))
-        }*/
     }
+}
+
+fun Intent.addFlags(): Intent {
+    this.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    return this
 }

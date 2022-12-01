@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.everypractice.databinding.MovieSearchIntermediateDetailItemBinding
-import com.example.everypractice.data.domain.TemporarySearchMovieElement
+import com.example.everypractice.data.models.TemporarySearchMovieElement
 
 
 class AdapterViewPageIntermediate(

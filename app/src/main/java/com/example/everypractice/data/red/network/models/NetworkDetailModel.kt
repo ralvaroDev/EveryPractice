@@ -3,7 +3,7 @@ package com.example.everypractice.data.red.network.models
 import com.example.everypractice.consval.BASE_BACKGROUND_IMAGE_URL
 import com.example.everypractice.consval.BASE_POSTER_IMAGE_URL
 import com.example.everypractice.data.database.DatabaseFavouriteMovie
-import com.example.everypractice.data.domain.TemporaryDetailMovie
+import com.example.everypractice.data.models.TemporaryDetailMovie
 import com.google.gson.annotations.SerializedName
 
 data class NetworkMovieDetailedContainer(

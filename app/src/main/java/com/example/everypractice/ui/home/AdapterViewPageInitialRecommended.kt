@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.everypractice.data.domain.PermanentFavouriteMovies
+import com.example.everypractice.data.models.PermanentFavouriteMovies
 import com.example.everypractice.databinding.FavouriteMovieRecommendedInitialItemBinding
 
 class AdapterViewPageInitialRecommended(

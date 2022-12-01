@@ -1,31 +1,21 @@
 package com.example.everypractice.ui.search
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.addCallback
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import coil.load
+import android.os.*
+import android.view.*
+import androidx.activity.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import androidx.navigation.fragment.*
+import coil.*
+import com.example.everypractice.*
 import com.example.everypractice.R
-import com.example.everypractice.databinding.FragmentDetailFavouriteBinding
-import com.example.everypractice.utils.util.getTimeToText
-import com.example.everypractice.utils.util.getTransformationIdsToGenres
-import com.example.everypractice.helpers.extensions.gone
-import com.example.everypractice.helpers.extensions.inVisible
-import com.example.everypractice.helpers.extensions.visible
-import com.example.everypractice.ui.MainApplication
-import com.example.everypractice.data.domain.AllImages
-import com.example.everypractice.data.domain.toUnitedObject1
-import com.example.everypractice.data.domain.toUnitedObject2
-import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
-import com.example.everypractice.ui.movies.vm.MovieViewModel
-import com.example.everypractice.ui.movies.vm.RequestMovieStatus
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
+import com.example.everypractice.data.models.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.helpers.extensions.*
+import com.example.everypractice.ui.movies.vm.*
+import com.example.everypractice.utils.util.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
 
 class DetailFavouriteFragment : Fragment() {
 
@@ -52,9 +42,16 @@ class DetailFavouriteFragment : Fragment() {
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (recorderPosition == -1) {
                 goBackToSearchFragment()
-            } else goBackToFragmentIntermediateMovies()
+            } else if (recorderPosition == -2){
+                goToFavouriteFragment(recorderPosition)
+            } else if(recorderPosition == -3){
+                goToFavouriteFragment(recorderPosition)
+            }
+            else goBackToFragmentIntermediateMovies()
         }
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -221,6 +218,10 @@ class DetailFavouriteFragment : Fragment() {
     private fun goBackToSearchFragment() {
         val action = DetailFavouriteFragmentDirections.toNavigationSearch()
         findNavController().navigate(action)
+    }
+
+    private fun goToFavouriteFragment(recorder: Int) {
+        findNavController().navigate(DetailFavouriteFragmentDirections.toNavigationFavourite(recorder))
     }
 
 

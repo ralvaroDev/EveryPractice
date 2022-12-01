@@ -1,12 +1,12 @@
 package com.example.everypractice.ui.movies.vm
 
 import androidx.lifecycle.*
+import com.example.everypractice.data.*
 import com.example.everypractice.data.domain.*
-import com.example.everypractice.data.FavouriteMovieRepository
-import kotlinx.coroutines.Dispatchers
+import com.example.everypractice.data.models.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import timber.log.*
 
 enum class RequestMovieStatus { LOADING, ERROR, DONE }
 

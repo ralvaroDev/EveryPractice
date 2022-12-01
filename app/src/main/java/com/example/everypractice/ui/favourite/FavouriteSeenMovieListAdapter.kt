@@ -1,18 +1,17 @@
 package com.example.everypractice.ui.favourite
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.transform.GrayscaleTransformation
-import com.example.everypractice.data.domain.PermanentFavouriteMovies
-import com.example.everypractice.databinding.FavouriteMovieItemBinding
-import com.example.everypractice.helpers.extensions.alternateGoneVisible
+import android.view.*
+import androidx.recyclerview.widget.*
+import androidx.transition.*
+import coil.*
+import coil.transform.*
+import com.example.everypractice.data.models.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.helpers.extensions.*
 
 class FavouriteSeenMovieListAdapter(
-    private val onBtnRestoredClicked: (id: Int) -> Unit
+    private val onBtnRestoredClicked: (id: Int) -> Unit,
+    private val onSeeDetailsClicked: (id: Int) -> Unit
 ) :
     ListAdapter<PermanentFavouriteMovies, FavouriteSeenMovieListAdapter.FavouriteMovieListViewHolder>(
         DiffCallBack()
@@ -22,21 +21,29 @@ class FavouriteSeenMovieListAdapter(
 
         fun bind(
             favouriteMovie: PermanentFavouriteMovies,
-            onBtnRestoredClicked: (id: Int) -> Unit
+            onBtnRestoredClicked: (id: Int) -> Unit,
+            onSeeDetailsClicked: (id: Int) -> Unit
         ) {
             binding.movieName.text = favouriteMovie.movieTitle
+            binding.btnMoveToSeen.text = "RESTORE"
             binding.tvRating.text = favouriteMovie.vote_Average.toString()
-            binding.ivPosterPathFavourite.load(favouriteMovie.posterPath){
+            binding.ivPosterPathFavourite.load(favouriteMovie.posterPath) {
                 transformations(
                     GrayscaleTransformation(),
                 )
                 build()
             }
             binding.materialCardView9.setOnClickListener {
-                binding.btnToggleOptionsa.alternateGoneVisible()
+                TransitionManager.beginDelayedTransition(binding.optionBarBtns, AutoTransition())
+                binding.optionBarBtns.alternateGoneVisible()
             }
             binding.btnMoveToSeen.setOnClickListener {
                 onBtnRestoredClicked(favouriteMovie.id)
+                //binding.optionBarBtns.alternateGoneVisible()
+            }
+            binding.btnSeeDetails.setOnClickListener {
+                onSeeDetailsClicked(favouriteMovie.id)
+                //binding.optionBarBtns.alternateGoneVisible()
             }
         }
 
@@ -55,7 +62,7 @@ class FavouriteSeenMovieListAdapter(
 
     override fun onBindViewHolder(holder: FavouriteMovieListViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(current,onBtnRestoredClicked)
+        holder.bind(current, onBtnRestoredClicked, onSeeDetailsClicked)
     }
 
     /*companion object {
@@ -79,7 +86,7 @@ class FavouriteSeenMovieListAdapter(
 
 }
 
-class DiffCallBack : DiffUtil.ItemCallback<PermanentFavouriteMovies>(){
+class DiffCallBack : DiffUtil.ItemCallback<PermanentFavouriteMovies>() {
     override fun areItemsTheSame(
         oldItem: PermanentFavouriteMovies,
         newItem: PermanentFavouriteMovies,

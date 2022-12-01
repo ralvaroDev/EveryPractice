@@ -4,23 +4,23 @@ import android.annotation.SuppressLint
 import android.view.View
 
 fun View.visible() {
-    this.visibility = View.VISIBLE
+    visibility = View.VISIBLE
 }
 
 fun View.inVisible() {
-    this.visibility = View.INVISIBLE
+    visibility = View.INVISIBLE
 }
 
 fun View.gone() {
-    this.visibility = View.GONE
+    visibility = View.GONE
 }
 
 fun View.enable() {
-    this.isEnabled = true
+    isEnabled = true
 }
 
 fun View.disable() {
-    this.isEnabled = false
+    isEnabled = false
 }
 
 @SuppressLint("SwitchIntDef")

@@ -1,7 +1,7 @@
 package com.example.everypractice.data.red.network.models
 
 import com.example.everypractice.consval.BASE_POSTER_IMAGE_URL
-import com.example.everypractice.data.domain.TemporaryStaffMovie
+import com.example.everypractice.data.models.TemporaryStaffMovie
 import com.google.gson.annotations.SerializedName
 
 data class NetworkStaffFromMovieContainer(

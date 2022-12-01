@@ -11,7 +11,7 @@
 
         <variable
             name="movie"
-            type="com.example.everypractice.data.domain.TemporarySearchMovieElement" />
+            type="com.example.everypractice.data.models.TemporarySearchMovieElement" />
         
     </data>
 

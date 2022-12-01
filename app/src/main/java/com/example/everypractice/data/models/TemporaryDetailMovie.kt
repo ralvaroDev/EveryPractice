@@ -1,4 +1,4 @@
-package com.example.everypractice.data.domain
+package com.example.everypractice.data.models
 
 import com.example.everypractice.data.database.DatabaseFavouriteMovie
 

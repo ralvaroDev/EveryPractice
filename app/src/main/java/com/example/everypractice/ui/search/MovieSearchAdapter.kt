@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.BlurTransformation
-import com.example.everypractice.data.domain.TemporarySearchMovieElement
+import com.example.everypractice.data.models.TemporarySearchMovieElement
 import com.example.everypractice.databinding.MovieSearchItemBinding
 import com.google.android.material.snackbar.Snackbar
 

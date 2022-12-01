@@ -1,18 +1,17 @@
 package com.example.everypractice.ui.favourite
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.example.everypractice.data.domain.PermanentFavouriteMovies
-import com.example.everypractice.databinding.FavouriteMovieItemBinding
-import com.example.everypractice.helpers.extensions.alternateGoneVisible
-import timber.log.Timber
+import android.view.*
+import androidx.recyclerview.widget.*
+import androidx.transition.*
+import coil.*
+import com.example.everypractice.data.models.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.helpers.extensions.*
+import timber.log.*
 
 class FavouriteSavedMovieListAdapter(
-    private val onBtnSeenClicked: (id: Int) -> Unit
+    private val onBtnSeenClicked: (id: Int) -> Unit,
+    private val onSeeDetailsClicked: (id: Int) -> Unit
 ) :
     ListAdapter<PermanentFavouriteMovies, FavouriteSavedMovieListAdapter.FavouriteMovieListViewHolder>(
         DiffCallBack
@@ -24,7 +23,8 @@ class FavouriteSavedMovieListAdapter(
 
         fun bind(
             favouriteMovie: PermanentFavouriteMovies,
-            onBtnSeenClicked: (id: Int) -> Unit
+            onBtnSeenClicked: (id: Int) -> Unit,
+            onSeeDetailsClicked: (id: Int) -> Unit
         ) {
             binding.movieName.text = favouriteMovie.movieTitle
             binding.tvRating.text = favouriteMovie.vote_Average.toString()
@@ -32,10 +32,16 @@ class FavouriteSavedMovieListAdapter(
             binding.permanentMovie=favouriteMovie
             binding.executePendingBindings()
             binding.materialCardView9.setOnClickListener {
-                binding.btnToggleOptionsa.alternateGoneVisible()
+                TransitionManager.beginDelayedTransition(binding.optionBarBtns, AutoTransition())
+                binding.optionBarBtns.alternateGoneVisible()
             }
             binding.btnMoveToSeen.setOnClickListener {
                 onBtnSeenClicked(favouriteMovie.id)
+                //binding.optionBarBtns.alternateGoneVisible()
+            }
+            binding.btnSeeDetails.setOnClickListener {
+                onSeeDetailsClicked(favouriteMovie.id)
+                //binding.optionBarBtns.alternateGoneVisible()
             }
         }
 
@@ -57,7 +63,7 @@ class FavouriteSavedMovieListAdapter(
     override fun onBindViewHolder(holder: FavouriteMovieListViewHolder, position: Int) {
         val current = getItem(position)
         Timber.d("Size of the list in adapter $itemCount")
-        holder.bind(current, onBtnSeenClicked)
+        holder.bind(current, onBtnSeenClicked, onSeeDetailsClicked)
     }
 
     companion object {

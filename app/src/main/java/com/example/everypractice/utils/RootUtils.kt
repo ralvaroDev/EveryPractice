@@ -1,4 +1,4 @@
-package com.example.everypractice.utils.util
+package com.example.everypractice.utils
 
 import android.os.Build
 

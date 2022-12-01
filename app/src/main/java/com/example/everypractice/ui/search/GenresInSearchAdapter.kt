@@ -3,7 +3,7 @@ package com.example.everypractice.ui.search
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.everypractice.data.domain.GenresMovies
+import com.example.everypractice.data.models.GenresMovies
 import com.example.everypractice.databinding.ItemGeneresBinding
 
 class GenresInSearchAdapter(

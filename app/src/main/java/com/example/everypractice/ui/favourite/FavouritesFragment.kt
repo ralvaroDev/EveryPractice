@@ -1,17 +1,13 @@
 package com.example.everypractice.ui.favourite
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
-import com.example.everypractice.databinding.FragmentFavouritesBinding
-import com.example.everypractice.ui.MainApplication
-import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
-import com.example.everypractice.ui.movies.vm.MovieViewModel
-import com.google.android.material.tabs.TabLayoutMediator
+import android.os.*
+import android.view.*
+import androidx.fragment.app.*
+import androidx.navigation.fragment.*
+import com.example.everypractice.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.ui.movies.vm.*
+import com.google.android.material.tabs.*
 
 
 class FavouritesFragment : Fragment() {
@@ -19,7 +15,16 @@ class FavouritesFragment : Fragment() {
     private var _binding: FragmentFavouritesBinding? = null
     private val binding get() = _binding!!
 
+    private var tabSelected: Int = 0
+
     private lateinit var adapterViews: AdapterViews
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments.let {
+            tabSelected = it!!.getInt("fromtab")
+        }
+    }
 
     private val sharedViewModel: MovieViewModel by activityViewModels {
         FavouriteMoviesViewModelFactory(
@@ -49,7 +54,7 @@ class FavouritesFragment : Fragment() {
                 1 -> tab.text = "SEEN"
             }
         }.attach()
-
+        binding.tabLayout.selectTab(binding.tabLayout.getTabAt(tabSelected))
 
 
 
