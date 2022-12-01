@@ -1,6 +1,6 @@
 package com.example.everypractice.data.repository
 
-import com.example.everypractice.data.domain.login.*
+import com.example.everypractice.data.domain.signup.*
 import com.example.everypractice.data.models.*
 import com.example.everypractice.data.repository.UserResponseStatus.DONE
 import com.example.everypractice.data.repository.UserResponseStatus.ERROR

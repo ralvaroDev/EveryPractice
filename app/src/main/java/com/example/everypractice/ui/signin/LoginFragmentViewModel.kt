@@ -3,6 +3,7 @@ package com.example.everypractice.ui.signin
 import androidx.lifecycle.*
 import com.example.everypractice.data.domain.login.*
 import com.example.everypractice.data.domain.onboarding.*
+import com.example.everypractice.data.domain.signup.*
 import com.example.everypractice.data.models.*
 import com.example.everypractice.data.repository.*
 import com.example.everypractice.data.repository.UserResponseStatus.DONE
@@ -52,7 +53,7 @@ class LoginFragmentViewModel @Inject constructor(
         }
     }
 
-    fun setPreferenceLogged(){
+    private fun setPreferenceLogged(){
         viewModelScope.launch {
             initialStateActionUseCase(MAIN)
         }

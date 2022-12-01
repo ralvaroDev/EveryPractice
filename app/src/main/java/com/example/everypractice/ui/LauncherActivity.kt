@@ -31,12 +31,14 @@ class LauncherActivity : AppCompatActivity() {
                         LOGIN -> {
                             startActivity(
                                 Intent(this@LauncherActivity, LoginActivity::class.java).addFlags()
-                            ).also { finish() }
+                            )
+                            finish()
                         }
                         MAIN -> {
                             startActivity(
                                 Intent(this@LauncherActivity, MainActivity::class.java).addFlags()
-                            ).also { finish() }
+                            )
+                            finish()
                         }
                     }
                 }
