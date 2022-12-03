@@ -4,16 +4,18 @@ import android.content.*
 import android.os.*
 import android.text.*
 import android.view.*
+import android.widget.*
 import androidx.appcompat.app.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
+import com.example.everypractice.consval.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.ui.*
-import com.example.everypractice.ui.signin.*
+import com.example.everypractice.utils.Result.*
 import com.google.firebase.auth.*
-import com.google.firebase.auth.ktx.*
-import com.google.firebase.ktx.*
 import dagger.hilt.android.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import timber.log.*
 
 @AndroidEntryPoint
@@ -22,7 +24,7 @@ class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LoginFragmentViewModel by activityViewModels()
+    private val viewModel: SignUpViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,68 +38,74 @@ class SignUpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         enableOrDisableButtonSearch()
-        binding.btnRegister.setOnClickListener {
-            signUpSetter()
 
-            viewModel.startFakeSignIn(
-                binding.tfRegisterEmail.text.toString(),
-                binding.tfRegisterPassword.text.toString(),
-                binding.tfRegisterName.text.toString()
-            )
+        val emailTest = USER_EMAIL_TEST
+        val passwordTest = USER_PASSWORD_TEST
+
+        binding.tfRegisterEmail.setText(emailTest, TextView.BufferType.SPANNABLE)
+        binding.tfRegisterEmail.hint = emailTest
+
+        binding.tfRegisterPassword.setText(passwordTest, TextView.BufferType.SPANNABLE)
+        binding.tfRegisterPassword.hint = passwordTest
+
+        binding.tfRegisterName.setText("Alvaro", TextView.BufferType.SPANNABLE)
+
+
+
+        binding.btnRegister.setOnClickListener {
+            signUpAction()
         }
 
 
 
     }
 
-
-
-    private fun signUpSetter() {
-        val email = binding.tfRegisterEmail.text.toString()
-        val password = binding.tfRegisterPassword.text.toString()
-        val name = binding.tfRegisterName.text.toString()
-
-        val instance = Firebase.auth
-        if (email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty()) {
-            instance.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        lifecycleScope.launchWhenStarted {
-                            viewModel.updateExistUser(true,
-                                emailUser = it.result.user?.email.toString())
+    private fun signUpAction() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.startSignIn(
+                    binding.tfRegisterEmail.text.toString(),
+                    binding.tfRegisterPassword.text.toString(),
+                    binding.tfRegisterName.text.toString()
+                ).collectLatest {
+                    when(it) {
+                        is Loading -> Loading
+                        is Error -> {
+                            try {
+                                val eCredentials = (it.exception as FirebaseAuthException).errorCode
+                                toast(eCredentials)
+                                binding.tflPassword.error = "Something invalid"
+                                binding.tflLogin.error = "Something invalid"
+                                binding.tflName.error = "Something invalid"
+                                Timber.d("Error with credentials: $eCredentials")
+                            } catch (e: Exception){
+                                Timber.d("Error signUp:  ${it.exception.message}")
+                            }
                         }
-                        //TODO, PARA VERIFICAR SI ES NUEVO USUARIO O INGRESA A UN LUGAR SIN DATOS, QUE DEPENDA INICIALMENTE DEL ONBOARDING PARA QUE DESCARGUE
-                        // DATOS, Y USEMOS MEJOR EL CURRENT USER DEL PREFERENCE PARA DEFINIR SI ES UN USUARIO DIFERENTE AL QUE LOS DATOS ESTAN ALMACENADOS, Y CON ESTE NUEVAMENTE HACER LA PETICION DE DATOS
-                        //POR AHORA QUE EL IDENTIFICADOR SEA EL EMAIL, LUEGO SE PUEDE HACER PARA COMPARTIR USUARIOS Y CON ESTE SE CREE UN CODIGO MAS BONITO Y NO VER CONSTANTEMENTE EL CORREO
-                        //ERROR TAMBIEN Y NOSE SI SOLO DE PRODUCT, PERO CUANDO RELANSO LA APP CON LA SESION ABVIERTO Y MATO LA CUENTA DESDE GOOGLE SIGUE PASANDO NORMAL
-                        //viewModel.createUser(email)
-                        updateProfile(instance, name)
-                    } else {
-                        showAlert()
+                        is Success -> {
+                            goToMainActivity()
+                        }
                     }
                 }
+            }
         }
     }
 
-    private fun updateProfile(instance: FirebaseAuth, userName: String) {
-        val user = instance.currentUser
-        val profileUpdates = userProfileChangeRequest {
-            displayName = userName
-            //photoUri = Uri.parse(profilePhoto)
+    private fun toast(message: String?){
+        requireActivity().runOnUiThread {
+            Toast.makeText(
+                requireContext(),
+                message,
+                Toast.LENGTH_SHORT
+            )
+                .show()
         }
-        user!!.updateProfile(profileUpdates)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    Timber.d("Update profile success!")
-                    goToMainActivity()
-                }
-            }
     }
 
     private fun goToMainActivity() {
-        val intent = Intent(requireContext(), MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val intent = Intent(requireContext(), MainActivity::class.java).addFlags()
         startActivity(intent)
+        requireActivity().finish()
     }
 
     //EDIT TEXT LISTENER
@@ -108,18 +116,15 @@ class SignUpFragment : Fragment() {
         var name = false
         var length : Boolean
         binding.tfRegisterEmail.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                //Log.d(TAG, "onTextChanged: ${s.toString().trim()}")
                 email = LoginFragment.EMAIL_PATTERN.matches(s.toString())
                 binding.btnRegister.isEnabled = email && pass && name
             }
         })
         binding.tfRegisterPassword.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 pass = s.toString().trim { it <= ' ' }.isNotEmpty()
@@ -129,8 +134,7 @@ class SignUpFragment : Fragment() {
         })
 
         binding.tfRegisterName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 name = s.toString().trim { it <= ' ' }.isNotEmpty()

@@ -10,20 +10,17 @@ import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
 import com.example.everypractice.consval.*
-import com.example.everypractice.data.domain.onboarding.*
-import com.example.everypractice.data.repository.UserResponseStatus.DONE
+import com.example.everypractice.data.models.login.UserResponseStatus.DONE
+import com.example.everypractice.data.models.login.UserResponseStatus.ERROR
 import com.example.everypractice.databinding.*
 import com.example.everypractice.ui.*
-import com.example.everypractice.ui.StartView.LOGIN
 import com.example.everypractice.ui.signin.*
+import com.example.everypractice.utils.Result.*
 import com.google.firebase.auth.*
-import com.google.firebase.auth.ktx.*
-import com.google.firebase.ktx.*
 import dagger.hilt.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
-import javax.inject.*
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -31,9 +28,6 @@ class LoginFragment : Fragment() {
     companion object {
         val EMAIL_PATTERN = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
     }
-
-    @Inject
-    lateinit var initialStateActionUseCase: InitialStateActionUseCase
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -67,93 +61,133 @@ class LoginFragment : Fragment() {
         binding.tfPassword.setText(passwordTest, TextView.BufferType.SPANNABLE)
         binding.tfPassword.hint = passwordTest
 
-        binding.btnLogin.setOnClickListener {
-            /*validateEntries(
-                binding.tfEmail.text.toString(),
-                binding.tfPassword.text.toString()
-            )*/
-            viewModel.startFakeLogin(
-                binding.tfEmail.text.toString(),
-                binding.tfPassword.text.toString()
-            )
-        }
-        lifecycleScope.launch {
+        /* binding.btnLogin.setOnClickListener {
+             viewModel.startFakeLogin(
+                 binding.tfEmail.text.toString(),
+                 binding.tfPassword.text.toString()
+             )
+         }*/
+        /*lifecycleScope.launch {
             viewModel.nav.collectLatest {
                 when (it) {
                     DONE -> {
-                        val intent = Intent(requireContext(),MainActivity::class.java)
+                        val intent = Intent(requireContext(), MainActivity::class.java)
                         startActivity(intent)
                         requireActivity().finish()
                     }
-                    else -> {
-                        Timber.d("Receive error en UI, no jump")
+                    ERROR -> Timber.d("Receive error en UI, no jump")
+                }
+            }
+        }*/
+        /////////////////
+        /*binding.btnLogin.setOnClickListener {
+            lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.login(
+                        binding.tfEmail.text.toString(),
+                        binding.tfPassword.text.toString()
+                    ).collectLatest {
+                        Timber.d("Colectando $it")
+                        when(it){
+                            is Success -> {
+                                when(it.data.status) {
+                                    DONE -> {
+                                        val intent = Intent(requireContext(), MainActivity::class.java)
+                                        startActivity(intent)
+                                        requireActivity().finish()
+                                    }
+                                    ERROR -> Timber.d("Error with credentials")
+                                }
+                            }
+                            is Error -> Timber.d("Receive error en UI : ${it.exception}")
+                            Loading -> {}
+                        }
                     }
                 }
             }
-
+        }*/
+        /////////////////////////
+        binding.btnLogin.setOnClickListener {
+            loginActionSTABLE()
         }
-        //TODO BUGSITO
+    }
+
+    private fun loginAction() {
         lifecycleScope.launch {
-            initialStateActionUseCase(LOGIN)
-        }
-
-
-    }
-
-    //FUN QUE VERIFICA EL PATRON DE INGRESO DEBE DEVOLVER BOOLEAN PARA ASI QUE ESTA FUN AVANCE EN ENVIAR PETICION
-    private fun validateEntries(
-        inputEmail: String,
-        inputPassword: String,
-    ) {
-        val instante = Firebase.auth
-
-        instante.signInWithEmailAndPassword(
-            inputEmail,
-            inputPassword
-        ).addOnCompleteListener {
-            if (it.isSuccessful) {
-                lifecycleScope.launchWhenStarted {
-                    viewModel.updateExistUser(true, emailUser = it.result.user?.email.toString())
-                }
-
-                goToHome()
-                signInTries = 0
-            } else {
-                try {
-                    val errorAuth = (it.exception as FirebaseAuthException).errorCode
-
-                    signInTries++
-                    if (signInTries > 2) {
-                        showAlert()
-                    }
-                    if (errorAuth == "ERROR_USER_NOT_FOUND") {
-                        binding.tflLogin.error = "Invalid Email"
-                    }
-                    if (errorAuth == "ERROR_WEAK_PASSWORD") {
-                        binding.tflPassword.error = "Password lees than 6 characters"
-                    }
-                    if (errorAuth == "ERROR_WRONG_PASSWORD") {
-                        binding.tflPassword.error = "Wrong password"
-                    }
-                } catch (e: Exception) {
-                    Timber.d("Error catching: ${e.message} | ${it.exception?.message}")
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(
-                            requireContext(),
-                            "No internet connection!! :(",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.startLogin(
+                    binding.tfEmail.text.toString(),
+                    binding.tfPassword.text.toString()
+                ).collectLatest {
+                    when (it) {
+                        DONE -> {
+                            signInTries = 0
+                            jumpToMainActivity()
+                        }
+                        ERROR -> {
+                            signInTries++
+                            if (signInTries > 2) {
+                                showAlert()
+                            }
+                            binding.tflLogin.error = "Something invalid"
+                            binding.tflPassword.error = "Something invalid"
+                        }
+                        is Exception -> toast()
+                        is Loading -> Loading
                     }
                 }
             }
         }
     }
 
-    private fun goToHome() {
-        val intent = Intent(context, MainActivity::class.java)
+    //TODO PUEDE LUEGO DEVOLVERME SOLO UN ENUM DEL CASO QUE HA SUCEDIDO
+    // Y EN BASE A ESO REALIZA UNA FUNCION EN ESPECIFICO XD
+    private fun loginActionSTABLE(){
+        lifecycleScope.launch{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.startLoginSTABLE(
+                    binding.tfEmail.text.toString(),
+                    binding.tfPassword.text.toString()
+                ).collectLatest {
+                    when(it) {
+                        is Success -> {
+                            signInTries = 0
+                            jumpToMainActivity()
+                        }
+                        is Error -> {
+                            try {
+                                val eCredentials = (it.exception as FirebaseAuthException).errorCode
+                                binding.tflLogin.error = "Something invalid"
+                                binding.tflPassword.error = "Something invalid"
+                                Timber.d("Error with credentials: $eCredentials")
+                            } catch (e: Exception){
+                                Timber.d("Error ${it.exception.message}")
+                            }
+                        }
+                        Loading -> {
+                            Timber.d("LOADING")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun jumpToMainActivity() {
+        val intent = Intent(requireContext(), MainActivity::class.java)
         startActivity(intent)
         requireActivity().finish()
+    }
+
+    private fun toast(){
+        requireActivity().runOnUiThread {
+            Toast.makeText(
+                requireContext(),
+                "No internet connection!! :(",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
     }
 
     private fun showAlert() {

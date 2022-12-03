@@ -72,18 +72,6 @@
             app:destination="@id/detailFavouriteFragment" />
     </fragment>
     <fragment
-        android:id="@+id/detailMovieFragment"
-        android:name="com.example.everypractice.ui.search.DetailMovieFragment"
-        android:label="fragment_detail_movie"
-        tools:layout="@layout/fragment_detail_movie" >
-        <argument
-            android:name="idmovie"
-            app:argType="integer" />
-        <argument
-            android:name="recorderposition"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/detailFavouriteFragment"
         android:name="com.example.everypractice.ui.search.DetailFavouriteFragment"
         android:label="fragment_detail_favourite"

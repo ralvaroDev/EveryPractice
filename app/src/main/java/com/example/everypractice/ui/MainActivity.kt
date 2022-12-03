@@ -3,23 +3,21 @@ package com.example.everypractice.ui
 import android.os.*
 import androidx.activity.*
 import androidx.appcompat.app.*
-import androidx.appcompat.widget.*
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsCompat.Type.ime
 import androidx.core.view.WindowInsetsCompat.toWindowInsetsCompat
 import androidx.navigation.*
 import androidx.navigation.fragment.*
-import androidx.navigation.ui.*
-import com.bumptech.glide.*
 import com.example.everypractice.R
 import com.example.everypractice.databinding.*
-import com.example.everypractice.ui.movies.ui.*
 import dagger.hilt.android.*
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), NavigationHost {
+class MainActivity : AppCompatActivity()
+//, NavigationHost
+{
 
-    companion object{
+    companion object {
         /** Key for an int extra defining the initial navigation target. */
         const val EXTRA_NAVIGATION_ID = "extra.NAVIGATION_ID"
 
@@ -31,8 +29,6 @@ class MainActivity : AppCompatActivity(), NavigationHost {
             R.id.navigation_favourite
         )
     }
-
-    lateinit var glide: Glide
 
     private lateinit var binding: ActivityMainBinding
 
@@ -46,37 +42,54 @@ class MainActivity : AppCompatActivity(), NavigationHost {
         setContentView(binding.root)
 
         //TODO REVISAR SI ES UNA BUENA MANERA DE EVITAR EL RETROCESO NO DESEADO
-        val callback = this.onBackPressedDispatcher.addCallback(this){
+        val callback = this.onBackPressedDispatcher.addCallback(this) {
             finish()
         }
 
-
-
-        //checkIfDeviceIsRooted()
-
-
-
-
-
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_movie) as NavHostFragment
-
         navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener{_, destination, _ ->
+
+        /**
+         * That allow us to handle repeat event
+         */
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             currentNavId = destination.id
+            //binding.bottomNavigation.isGone = (currentNavId == R.id.detailFavouriteFragment)
             //why? TODO hide nav if not a top level destination??
         }
 
-        binding.bottomNavigation.apply {
+        /*binding.bottomNavigation.apply {
             setupWithNavController(navController)
             //handle navigation to the same item
             //TODO REVISAR LUEGO BIEN ESTO PARA EVITAR QUE SE CREEN MUCHAS PILAS
             setOnItemReselectedListener {
-                /*if (it.itemId ==  R.id.navigation_search && currentNavId != it.itemId){
+                *//*if (it.itemId ==  R.id.navigation_search && currentNavId != it.itemId){
                     navigateTo(R.id.navigation_search)
-                }*/
+                }*//*
+            }
+        }*/
+
+
+
+        binding.bottomNavigation.setOnItemSelectedListener {
+            when (val id = it.itemId) {
+                R.id.navigation_home -> {
+                    navigateTo(id)
+                    true
+                }
+                R.id.navigation_search -> {
+                    navigateTo(id)
+                    true
+                }
+                R.id.navigation_favourite -> {
+                    navigateTo(id)
+                    true
+                }
+                else -> false
             }
         }
+
 
         window.decorView.setOnApplyWindowInsetsListener { view, insets ->
             val insetsCompat = toWindowInsetsCompat(insets, view)
@@ -85,76 +98,54 @@ class MainActivity : AppCompatActivity(), NavigationHost {
         }
 
 
+    }
 
-        /*ViewCompat.setOnApplyWindowInsetsListener(binding.rootContainer) { view, insets ->
-            // Hide the bottom navigation view whenever the keyboard is visible.
-            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-            binding.bottomNavigation?.isVisible = !imeVisible
-
-            // If we're showing the bottom navigation, add bottom padding. Also, add left and right
-            // padding since there's no better we can do with horizontal insets.
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val bottomPadding = if (binding.bottomNavigation?.isVisible == true) {
-                systemBars.bottom
-            } else 0
-            view.updatePadding(
-                left = systemBars.left,
-                right = systemBars.right,
-                bottom = bottomPadding
-            )
-            // Consume the insets we've used.
-            WindowInsetsCompat.Builder(insets).setInsets(
-                WindowInsetsCompat.Type.systemBars(),
-                Insets.of(0, systemBars.top, 0, systemBars.bottom - bottomPadding)
-            ).build()
+    private fun navigateTo(navId: Int) {
+        if (navId == currentNavId) {
+            return //user tapped the current item
         }
-*/
-
+        navController.navigate(navId)
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    override fun registerToolbarWithNavigation(toolbar: Toolbar) {
-        val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
-    }
-
-    override fun onUserInteraction() {
+    /*override fun onUserInteraction() {
         super.onUserInteraction()
         getCurrentFragment()?.onUserInteraction()
     }
 
-    /** Obtain the current fragment we are */
+    private fun getCurrentFragment(): MainNavigationFragment? {
+        return navHostFragment.childFragmentManager
+            .primaryNavigationFragment as? MainNavigationFragment
+    }*/
+}
+
+/*
+
+override fun registerToolbarWithNavigation(toolbar: Toolbar) {
+    val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
+    toolbar.setupWithNavController(navController, appBarConfiguration)
+}
+
+override fun onUserInteraction() {
+    super.onUserInteraction()
+    getCurrentFragment()?.onUserInteraction()
+}
+
+* Obtain the current fragment we are
     private fun getCurrentFragment(): MainNavigationFragment? {
         return navHostFragment
             .childFragmentManager
             .primaryNavigationFragment as? MainNavigationFragment
     }
 
-    /** This function handles the navigation directions */
-    private fun navigateTo(navId: Int) {
-        if (navId == currentNavId){
-            return //user tapped the current item
-        }
-        navController.navigate(navId)
-    }
+    */
+/** This function handles the navigation directions /*
 
-    /**
-     * Functions like that allow us to go any fragment
-     */
-    /*private fun openNoConnection() {
-        navigateTo(*//*fragment de no conection*//*)
-    }*/
+
+/**
+ * Functions like that allow us to go any fragment
+private fun openNoConnection() {
+navigateTo(fragment de no conection)
+}
 
 
 
@@ -162,41 +153,42 @@ class MainActivity : AppCompatActivity(), NavigationHost {
 
 
 
-/*
 
 private fun checkIfDeviceIsRooted() = CoroutineScope(IO).launch {
 
-    val isRooted = RootBeer(this@MoviesMainActivity).isRooted
-    if (isRooted){
-        withContext(Main) {
-            val snack = Snackbar.make(binding.root,
-                "Rooted", Snackbar.LENGTH_SHORT)
-            snack.show()
-        }
-    }
-    if (!isRooted){
-        withContext(Main) {
-            val snack = Snackbar.make(binding.root,
-                "No root", Snackbar.LENGTH_SHORT)
-            snack.show()
-        }
-    }
+val isRooted = RootBeer(this@MoviesMainActivity).isRooted
+if (isRooted){
+withContext(Main) {
+val snack = Snackbar.make(binding.root,
+"Rooted", Snackbar.LENGTH_SHORT)
+snack.show()
+}
+}
+if (!isRooted){
+withContext(Main) {
+val snack = Snackbar.make(binding.root,
+"No root", Snackbar.LENGTH_SHORT)
+snack.show()
+}
+}
 
-    if (isEmulator()){
-        withContext(Main) {
-            val snack = Snackbar.make(binding.root,
-                "emulator", Snackbar.LENGTH_SHORT)
-            delay(1000L)
-            snack.show()
-        }
-    }
-    if (!isEmulator()){
-        withContext(Main) {
-            val snack = Snackbar.make(binding.root,
-                "Not emulator", Snackbar.LENGTH_SHORT)
-            delay(1000L)
-            snack.show()
-        }
-    }
+if (isEmulator()){
+withContext(Main) {
+val snack = Snackbar.make(binding.root,
+"emulator", Snackbar.LENGTH_SHORT)
+delay(1000L)
+snack.show()
+}
+}
+if (!isEmulator()){
+withContext(Main) {
+val snack = Snackbar.make(binding.root,
+"Not emulator", Snackbar.LENGTH_SHORT)
+delay(1000L)
+snack.show()
+}
+}
 
-}*/
+}
+*/
+ */

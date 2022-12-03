@@ -5,22 +5,19 @@ import android.view.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
-import com.example.everypractice.*
 import com.example.everypractice.databinding.*
-import com.example.everypractice.ui.movies.vm.*
+import com.example.everypractice.ui.*
+import dagger.hilt.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
+@AndroidEntryPoint
 class FavouriteSeenFragment : Fragment() {
 
     private var _binding: FragmentFavouriteSeenBinding? = null
     private val binding get() = _binding!!
 
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
+    private val sharedViewModel: MovieViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

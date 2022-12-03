@@ -1,23 +1,18 @@
 package com.example.everypractice.ui.search
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.addCallback
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import com.example.everypractice.databinding.FragmentDetailMovieBinding
-import com.example.everypractice.utils.util.getTransformationIdsToGenres
-import com.example.everypractice.MainApplication
-import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
-import com.example.everypractice.ui.movies.vm.MovieViewModel
-import com.example.everypractice.ui.movies.vm.RequestMovieStatus
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
+import android.os.*
+import android.view.*
+import androidx.activity.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.ui.*
+import com.example.everypractice.utils.util.*
+import dagger.hilt.android.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
 
-
+@AndroidEntryPoint
 class DetailMovieFragment : Fragment() {
 
     private var _binding: FragmentDetailMovieBinding? = null
@@ -26,11 +21,7 @@ class DetailMovieFragment : Fragment() {
     private var movieId: Int = 0
     private var recorderPosition: Int = 0
 
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
+    private val sharedViewModel: MovieViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

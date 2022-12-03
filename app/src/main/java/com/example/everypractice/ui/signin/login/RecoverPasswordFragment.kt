@@ -1,26 +1,20 @@
 package com.example.everypractice.ui.signin.login
 
-import android.content.DialogInterface
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.everypractice.databinding.FragmentRecoverPasswordBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.actionCodeSettings
-import com.google.firebase.dynamiclinks.ktx.dynamicLink
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
-import com.google.firebase.dynamiclinks.ktx.navigationInfoParameters
-import com.google.firebase.ktx.Firebase
-import timber.log.Timber
+import android.content.*
+import android.net.*
+import android.os.*
+import android.text.*
+import android.view.*
+import android.widget.*
+import androidx.appcompat.app.*
+import androidx.fragment.app.*
+import androidx.navigation.fragment.*
+import com.example.everypractice.databinding.*
+import com.google.firebase.auth.*
+import com.google.firebase.auth.ktx.*
+import com.google.firebase.dynamiclinks.ktx.*
+import com.google.firebase.ktx.*
+import timber.log.*
 
 class RecoverPasswordFragment : Fragment() {
 
@@ -32,7 +26,6 @@ class RecoverPasswordFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentRecoverPasswordBinding.inflate(inflater, container, false)
         return binding.root
     }

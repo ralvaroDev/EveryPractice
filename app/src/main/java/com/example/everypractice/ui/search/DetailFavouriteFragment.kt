@@ -1,5 +1,6 @@
 package com.example.everypractice.ui.search
 
+import android.content.*
 import android.os.*
 import android.view.*
 import androidx.activity.*
@@ -7,16 +8,17 @@ import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
 import coil.*
-import com.example.everypractice.*
 import com.example.everypractice.R
 import com.example.everypractice.data.models.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.helpers.extensions.*
-import com.example.everypractice.ui.movies.vm.*
+import com.example.everypractice.ui.*
 import com.example.everypractice.utils.util.*
+import dagger.hilt.android.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
 
+@AndroidEntryPoint
 class DetailFavouriteFragment : Fragment() {
 
     private var savedId: String? = null
@@ -24,14 +26,11 @@ class DetailFavouriteFragment : Fragment() {
     private var movieId: Int = 0
     private var recorderPosition: Int = 0
 
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
+    private val sharedViewModel: MovieViewModel by activityViewModels()
 
     private var _binding: FragmentDetailFavouriteBinding? = null
     private val binding get() = _binding!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,6 +143,7 @@ class DetailFavouriteFragment : Fragment() {
             }
 
         }
+
 
         lifecycleScope.launchWhenStarted {
             sharedViewModel.requestStaffStatus.collectLatest { status ->

@@ -21,28 +21,6 @@ sealed class Result<out R> {
     }
 }
 
-abstract class Example {
-    operator fun invoke() {
-        print("sss")
-    }
-}
-
-class Ex2 {
-    fun start() {
-
-    }
-}
-
-class E {
-    fun d(e: Example) {
-        e()
-    }
-
-    fun d2(e: Ex2) {
-        e.start()
-    }
-}
-
 /**
  * `true` if [Result] is of type [Success] & holds non-null [Success.data].
  */
@@ -51,3 +29,6 @@ val Result<*>.succeeded
 
 val <T> Result<T>.data: T?
     get() = (this as? Success)?.data
+
+
+

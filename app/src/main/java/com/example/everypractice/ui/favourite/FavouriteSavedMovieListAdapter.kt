@@ -7,7 +7,6 @@ import coil.*
 import com.example.everypractice.data.models.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.helpers.extensions.*
-import timber.log.*
 
 class FavouriteSavedMovieListAdapter(
     private val onBtnSeenClicked: (id: Int) -> Unit,
@@ -62,7 +61,6 @@ class FavouriteSavedMovieListAdapter(
 
     override fun onBindViewHolder(holder: FavouriteMovieListViewHolder, position: Int) {
         val current = getItem(position)
-        Timber.d("Size of the list in adapter $itemCount")
         holder.bind(current, onBtnSeenClicked, onSeeDetailsClicked)
     }
 

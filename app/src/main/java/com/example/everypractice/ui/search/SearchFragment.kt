@@ -1,25 +1,23 @@
 package com.example.everypractice.ui.search
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.example.everypractice.data.models.GenresMovies
-import com.example.everypractice.databinding.FragmentSearchBinding
-import com.example.everypractice.MainApplication
-import com.example.everypractice.ui.movies.vm.FavouriteMoviesViewModelFactory
-import com.example.everypractice.ui.movies.vm.MovieViewModel
-import com.example.everypractice.ui.movies.vm.RequestMovieStatus
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import android.os.*
+import android.view.*
+import android.view.inputmethod.*
+import android.widget.*
+import androidx.fragment.app.*
+import androidx.lifecycle.*
+import androidx.navigation.fragment.*
+import com.example.everypractice.data.models.*
+import com.example.everypractice.databinding.*
+import com.example.everypractice.helpers.extensions.*
+import com.example.everypractice.ui.*
+import com.example.everypractice.utils.Result.*
+import dagger.hilt.android.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import timber.log.*
 
+@AndroidEntryPoint
 class SearchFragment : Fragment() {
 
     companion object {
@@ -49,11 +47,9 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
+    private val searchViewModel: SearchViewModel by viewModels()
+
+    private val sharedViewModel: MovieViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,21 +85,46 @@ class SearchFragment : Fragment() {
             onClickItemFromPopular(it)
         }
 
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                searchViewModel.popularMovies.collectLatest {
+                    when(it){
+                        is Error -> {
+                            binding.layoutNewSearchLoader.tvTitlePopular.gone()
+                            binding.layoutNewSearchLoader.rvPopularMovies.gone()
+                            Timber.d("Error: ${it.exception.message}")
+                        }
+                        Loading -> {
+                            Timber.d("Loading bro")
+                            binding.layoutNewSearchLoader.rvPopularMovies.inVisible()
+                            binding.layoutNewSearchLoader.layoutShimmerPopularItems.shimmerLoader.visible()
+                        }
+                        is Success -> {
+                            adapter.submitList(it.data.results)
+                            binding.layoutNewSearchLoader.rvPopularMovies.visible()
+                            binding.layoutNewSearchLoader.layoutShimmerPopularItems.shimmerLoader.gone()
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /*lifecycleScope.launchWhenStarted {
             sharedViewModel.requestPopularStatus.collectLatest { status ->
                 Timber.d("MovieStatus POPULAR in collector: $status")
                 when (status) {
                     RequestMovieStatus.LOADING -> {
-                        /*binding.rvMovieSearch.visibility = View.GONE
-                        binding.layoutShimmerNotificationsLoader.shimmerLoader.visible()*/
+                        *//*binding.rvMovieSearch.visibility = View.GONE
+                        binding.layoutShimmerNotificationsLoader.shimmerLoader.visible()*//*
                     }
                     RequestMovieStatus.ERROR -> {
-                        /*binding.rvMovieSearch.visibility = View.GONE
-                        binding.layoutShimmerNotificationsLoader.shimmerLoader.gone()*/
+                        *//*binding.rvMovieSearch.visibility = View.GONE
+                        binding.layoutShimmerNotificationsLoader.shimmerLoader.gone()*//*
                     }
                     RequestMovieStatus.DONE -> {
-                        /*binding.layoutShimmerNotificationsLoader.shimmerLoader.gone()
-                        binding.rvMovieSearch.visibility = View.VISIBLE*/
+                        *//*binding.layoutShimmerNotificationsLoader.shimmerLoader.gone()
+                        binding.rvMovieSearch.visibility = View.VISIBLE*//*
                         Timber.d("MovieStatus inside IF: $status")
                         sharedViewModel.showListOfPopularMovie().collectLatest {
                             adapter.submitList(it.results)
@@ -111,7 +132,7 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
-        }
+        }*/
 
         binding.layoutNewSearchLoader.rvPopularMovies.adapter = adapter
     }

@@ -1,23 +1,26 @@
-package com.example.everypractice.ui.movies.vm
+package com.example.everypractice.ui
 
 import androidx.lifecycle.*
 import com.example.everypractice.data.*
-import com.example.everypractice.data.domain.*
 import com.example.everypractice.data.models.*
+import com.example.everypractice.ui.RequestMovieStatus.*
+import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
+import javax.inject.*
 
 enum class RequestMovieStatus { LOADING, ERROR, DONE }
 
-
-class MovieViewModel(
-    private val repository: FavouriteMovieRepository
+@HiltViewModel
+class MovieViewModel @Inject constructor(
+    private val repository: FavouriteMovieRepository,
+    private val networkRepository: NetworkRepository
 ) : ViewModel() {
 
-    init {
+    /*init {
         sendPetitionPopularMovieAndShowIt()
-    }
+    }*/
 
     /*---------SPACE TO DECLARE ALL VARIABLES TO USE----------*/
 
@@ -51,31 +54,31 @@ class MovieViewModel(
     /**
      * Shows the status of the SEARCH PETITION
      * */
-    private val _requestMovieSearchStatus = MutableStateFlow(RequestMovieStatus.LOADING)
+    private val _requestMovieSearchStatus = MutableStateFlow(LOADING)
     val requestMovieSearchStatus = _requestMovieSearchStatus.asStateFlow()
 
     /**
      * Shows the status of the POPULAR PETITION
      */
-    private val _requestPopularStatus = MutableStateFlow(RequestMovieStatus.LOADING)
-    val requestPopularStatus = _requestPopularStatus.asStateFlow()
+    /*private val _requestPopularStatus = MutableStateFlow(LOADING)
+    val requestPopularStatus = _requestPopularStatus.asStateFlow()*/
 
     /**
      * Shows the status of the DETAIL OF MOVIE PETITION
      * */
-    private val _requestMovieDetailStatus = MutableStateFlow(RequestMovieStatus.LOADING)
+    private val _requestMovieDetailStatus = MutableStateFlow(LOADING)
     val requestMovieDetailStatus = _requestMovieDetailStatus.asStateFlow()
 
     /**
      * Shows the status of the STAFF OF MOVIE PETITION
      */
-    private val _requestStaffStatus = MutableStateFlow(RequestMovieStatus.LOADING)
+    private val _requestStaffStatus = MutableStateFlow(LOADING)
     val requestStaffStatus = _requestStaffStatus.asStateFlow()
 
     /**
      * Shows the status of the IMAGES OF MOVIE PETITION
      */
-    private val _requestImagesStatus = MutableStateFlow(RequestMovieStatus.LOADING)
+    private val _requestImagesStatus = MutableStateFlow(LOADING)
     val requestImagesStatus = _requestImagesStatus.asStateFlow()
 
 
@@ -84,7 +87,7 @@ class MovieViewModel(
     fun obtainMultiSEARCHWithWord(word: String){
         viewModelScope.launch {
             try {
-                var multiResponse = repository.obtainMultiSEARCHWithWord(word)
+                var multiResponse = networkRepository.obtainMultiSEARCHWithWord(word)
                 Timber.d("RESULT MULTI SEARCH: ----> ${multiResponse.results.toList()[2]}$")
             } catch (e:Exception){
                 Timber.d("Error with MULTI SEARCH: ${e.message}")
@@ -96,22 +99,22 @@ class MovieViewModel(
     /**
      *  Function that send petition POPULAR, update the status of it and save the results
      */
-    private fun sendPetitionPopularMovieAndShowIt() {
+    /*private fun sendPetitionPopularMovieAndShowIt() {
         Timber.d("Petition POPULAR received")
         viewModelScope.launch {
-            _requestPopularStatus.value = RequestMovieStatus.LOADING
+            _requestPopularStatus.value = LOADING
             Timber.d("Status POPULAR emitted")
             try {
-                resultsPopularMovie = repository.obtainListOfPopularMovies()
+                resultsPopularMovie = networkRepository.obtainListOfPopularMovies()
                 Timber.d("Object POPULAR received and saved in the state")
-                _requestPopularStatus.value = RequestMovieStatus.DONE
+                _requestPopularStatus.value = DONE
                 Timber.d("Status POPULAR done emitted")
             } catch (e: Exception) {
-                _requestPopularStatus.value = RequestMovieStatus.ERROR
+                _requestPopularStatus.value = ERROR
                 Timber.d("Error sending petition POPULAR: ${e.message} \n MovieStatus In Catch: ERROR")
             }
         }
-    }
+    }*/
 
     /**
      * Function that emit the ListOfPopularMovies saved
@@ -128,15 +131,15 @@ class MovieViewModel(
     fun sendPetitionSearchMovie(entry: String) {
         Timber.d("Petition SEARCH received")
         viewModelScope.launch {
-            _requestMovieSearchStatus.value = RequestMovieStatus.LOADING
+            _requestMovieSearchStatus.value = LOADING
             Timber.d("Status emitted")
             try {
-                resultsListSearchMovie = repository.obtainListOfMoviesFromSearchWithWord(entry)
+                resultsListSearchMovie = networkRepository.obtainListOfMoviesFromSearchWithWord(entry)
                 Timber.d("Object received and saved in the state")
-                _requestMovieSearchStatus.value = RequestMovieStatus.DONE
+                _requestMovieSearchStatus.value = DONE
                 Timber.d("Status done emitted")
             } catch (e: Exception) {
-                _requestMovieSearchStatus.value = RequestMovieStatus.ERROR
+                _requestMovieSearchStatus.value = ERROR
                 Timber.d("Error sending petition SEARCH: ${e.message} \n MovieStatus In Catch: ERROR")
             }
         }
@@ -162,15 +165,15 @@ class MovieViewModel(
     fun sendPetitionToGetMovieDetails(entryId: Int) {
         Timber.d("Petition DETAIL Id: $entryId received")
         viewModelScope.launch {
-            _requestMovieDetailStatus.value = RequestMovieStatus.LOADING
+            _requestMovieDetailStatus.value = LOADING
             Timber.d("Status DETAIL emitted and sending Petition Id to Internet")
             try {
-                resultOfDetailMovie = repository.obtainDetailFromMovieWithId(entryId)
+                resultOfDetailMovie = networkRepository.obtainDetailFromMovieWithId(entryId)
                 Timber.d("Element from petition with ID received and saved in the state")
-                _requestMovieDetailStatus.value = RequestMovieStatus.DONE
+                _requestMovieDetailStatus.value = DONE
                 Timber.d("Status DETAIL done emitted")
             } catch (e: Exception) {
-                _requestMovieDetailStatus.value = RequestMovieStatus.ERROR
+                _requestMovieDetailStatus.value = ERROR
                 Timber.d("Error sending DETAIL petition: ${e.message} \n MovieDetailStatus In Catch: ERROR")
             }
         }
@@ -196,15 +199,15 @@ class MovieViewModel(
     fun sendPetitionToGetStaffFromMovieWithGivenId(movieId: Int) {
         Timber.d("Petition STAFF Id: $movieId received")
         viewModelScope.launch {
-            _requestStaffStatus.value = RequestMovieStatus.LOADING
+            _requestStaffStatus.value = LOADING
             Timber.d("Status STAFF emitted and sending Petition Id to Internet")
             try {
-                listOfStaffFromMovie = repository.obtainStaffOfAMovieWithId(movieId)
+                listOfStaffFromMovie = networkRepository.obtainStaffOfAMovieWithId(movieId)
                 Timber.d("Element from petition STAFF with ID received and saved in the state")
-                _requestStaffStatus.value = RequestMovieStatus.DONE
+                _requestStaffStatus.value = DONE
                 Timber.d("Status STAFF done emitted")
             } catch (e: Exception) {
-                _requestStaffStatus.value = RequestMovieStatus.ERROR
+                _requestStaffStatus.value = ERROR
                 Timber.d("Error sending STAFF petition: ${e.message} \n requestStaffStatus In Catch: ERROR")
             }
         }
@@ -230,15 +233,15 @@ class MovieViewModel(
     fun sendPetitionToGetImagesFromMovieWithGivenId(movieId: Int, language: String = "es") {
         Timber.d("Petition IMAGES Id: $movieId received")
         viewModelScope.launch {
-            _requestImagesStatus.value = RequestMovieStatus.LOADING
+            _requestImagesStatus.value = LOADING
             Timber.d("Status IMAGES emitted and sending Petition Id to Internet")
             try {
-                resultOfImagesFromMovie = repository.obtainImagesESFromMovieWithGivenId(movieId, language)
+                resultOfImagesFromMovie = networkRepository.obtainImagesESFromMovieWithGivenId(movieId, language)
                 Timber.d("Element from petition IMAGES with ID received and saved in the state")
-                _requestImagesStatus.value = RequestMovieStatus.DONE
+                _requestImagesStatus.value = DONE
                 Timber.d("Status IMAGES done emitted")
             } catch (e: Exception) {
-                _requestImagesStatus.value = RequestMovieStatus.ERROR
+                _requestImagesStatus.value = ERROR
                 Timber.d("Error sending IMAGES petition: ${e.message} \n requestStaffStatus In Catch: ERROR")
             }
         }
@@ -336,22 +339,6 @@ class MovieViewModel(
     //convert search to string to send retrofit
     private fun convertWordToRetrofit(name: String): String {
         return name.trim { it <= ' ' }.replace(" ", "+", true)
-    }
-
-}
-
-
-@Suppress("UNCHECKED_CAST")
-class FavouriteMoviesViewModelFactory(
-    private val movieRepository: FavouriteMovieRepository
-) :
-    ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MovieViewModel::class.java)) {
-            return MovieViewModel(movieRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 
 }

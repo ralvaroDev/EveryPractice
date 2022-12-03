@@ -1,37 +1,10 @@
 package com.example.everypractice.data.red
 
-import com.example.everypractice.data.models.MoviesInTheatresGson
-import com.example.everypractice.data.models.RateMovieRequest
-import com.example.everypractice.data.models.RateMovieResponse
+import com.example.everypractice.data.models.*
 import com.example.everypractice.data.red.network.models.*
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.everypractice.di.ApiModule.API_KEY
 import retrofit2.http.*
-import java.util.concurrent.TimeUnit
 
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-//TODO LUEGO BUSCAR COMO MANEJAR LOS ERRORES DE SOLICITUD O RED
-private val client = OkHttpClient.Builder()
-    .addInterceptor(httpTimberInterceptor().bodyLevel())
-    .addInterceptor(HeaderInterceptor())
-    .callTimeout(timeout = 20L,TimeUnit.SECONDS)
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    //.addConverterFactory(ScalarsConverterFactory.create())
-    .addConverterFactory(GsonConverterFactory.create())
-    //.addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(BASE_URL)
-    .client(client)
-    .build()
-
-//HTTPS METHODS
 interface MovieApiService {
 
     //https://api.themoviedb.org/3/search/movie?api_key=21ff02d316f95915429ebe923b39a82c&query=Jack+Reacher
@@ -110,9 +83,4 @@ interface MovieApiService {
     ): RateMovieResponse
     //PROCESSING
 
-}
-
-//UNIQUE INSTANCE OF REQUEST SERVICE
-object MovieApi {
-    val retrofitService: MovieApiService by lazy { retrofit.create(MovieApiService::class.java) }
 }

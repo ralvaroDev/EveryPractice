@@ -1,4 +1,4 @@
-package com.example.everypractice.data.models
+package com.example.everypractice.data.models.login
 
 //TODO ESTE DATA CLASS DEBE IR AQUI O ENCIMA DE SU USE CASE?
 data class LoginCredentials(

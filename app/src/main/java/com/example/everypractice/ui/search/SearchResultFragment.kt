@@ -8,14 +8,15 @@ import androidx.activity.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
-import com.example.everypractice.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.helpers.extensions.*
-import com.example.everypractice.ui.movies.vm.*
+import com.example.everypractice.ui.*
+import dagger.hilt.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
 
+@AndroidEntryPoint
 class SearchResultFragment : Fragment() {
 
     private var _binding: FragmentSearchResultBinding? = null
@@ -23,11 +24,7 @@ class SearchResultFragment : Fragment() {
 
     private lateinit var movieSearch: String
 
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
+    private val sharedViewModel: MovieViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +67,7 @@ class SearchResultFragment : Fragment() {
                 when (status) {
 
                     RequestMovieStatus.LOADING -> {
+                        Timber.d("Loading bro")
                         binding.rvMovieSearch.visibility = View.GONE
                         binding.layoutShimmerNotificationsLoader.shimmerLoader.visible()
                     }

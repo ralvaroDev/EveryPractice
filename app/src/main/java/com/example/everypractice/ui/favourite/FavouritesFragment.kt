@@ -4,12 +4,11 @@ import android.os.*
 import android.view.*
 import androidx.fragment.app.*
 import androidx.navigation.fragment.*
-import com.example.everypractice.*
 import com.example.everypractice.databinding.*
-import com.example.everypractice.ui.movies.vm.*
 import com.google.android.material.tabs.*
+import dagger.hilt.android.*
 
-
+@AndroidEntryPoint
 class FavouritesFragment : Fragment() {
 
     private var _binding: FragmentFavouritesBinding? = null
@@ -24,12 +23,6 @@ class FavouritesFragment : Fragment() {
         arguments.let {
             tabSelected = it!!.getInt("fromtab")
         }
-    }
-
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
     }
 
     override fun onCreateView(

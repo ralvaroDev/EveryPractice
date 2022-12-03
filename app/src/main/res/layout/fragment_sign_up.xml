@@ -72,6 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4"
                 app:startIconDrawable="@drawable/ic_at"
+                app:errorEnabled="true"
                 app:endIconMode="clear_text"
                 app:startIconTint="#828ea0">
 
@@ -92,6 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/password"
+                app:errorEnabled="true"
                 android:textColorHint="#959faf"
                 android:theme="@style/MyEditTextTheme2"
                 app:boxBackgroundColor="#262a34"
@@ -126,6 +128,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tfl_password"
                 app:startIconDrawable="@drawable/ic_name"
+                app:errorEnabled="true"
                 app:startIconTint="#828ea0">
 
                 <com.google.android.material.textfield.TextInputEditText

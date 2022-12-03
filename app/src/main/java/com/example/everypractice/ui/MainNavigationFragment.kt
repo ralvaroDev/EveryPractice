@@ -1,10 +1,11 @@
 package com.example.everypractice.ui.movies.ui
 
-import android.content.Context
-import android.os.Bundle
-import android.view.View
-import android.widget.Toolbar
-import androidx.fragment.app.Fragment
+import android.content.*
+import android.os.*
+import android.view.*
+import android.widget.*
+import androidx.fragment.app.*
+
 
 /**
  * To be implement by components that host top-level navigation destinations

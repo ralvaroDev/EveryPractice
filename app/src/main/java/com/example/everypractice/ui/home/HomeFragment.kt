@@ -7,17 +7,15 @@ import androidx.appcompat.app.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.viewpager2.widget.*
-import com.example.everypractice.*
 import com.example.everypractice.databinding.*
-import com.example.everypractice.ui.movies.vm.*
 import com.example.everypractice.ui.signin.*
+import com.example.everypractice.utils.Result.*
 import com.google.firebase.auth.*
-import com.google.firebase.auth.ktx.*
-import com.google.firebase.ktx.*
 import dagger.hilt.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
+import javax.inject.*
 import kotlin.math.*
 
 @AndroidEntryPoint
@@ -26,26 +24,18 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private val homeViewModel: HomeViewModel by viewModels()
+
+    @Inject
+    lateinit var firebaseAuth: FirebaseAuth
+
     //VIEW-PAGER-2
     private lateinit var viewPager2: ViewPager2
-
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Timber.d("ME ACABO DE CREAAAR")
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -57,20 +47,26 @@ class HomeFragment : Fragment() {
         setupCustom()
 
         binding.btnNotification.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
+            firebaseAuth.signOut()
             onOutSession()
-            lifecycleScope.launch {
-                (requireActivity().application as MainApplication).userPreferenceRepository.updateUserLastSession(false,"","")
-            }
+            homeViewModel.setPreferenceUnLogged()
             activity?.finish()
         }
 
         viewPager2 = binding.vp2DailyRecomendation
-        lifecycleScope.launchWhenCreated {
-            sharedViewModel.get4FavouriteRecommendedMovies().collectLatest {
-                viewPager2.adapter = AdapterViewPageInitialRecommended(it)
+        lifecycleScope.launch {
+            homeViewModel.showRecommendedMoviesHome.collectLatest {
+                when(it){
+                    is Error -> {Timber.d("Error getting movies from Database")}
+                    Loading -> {}
+                    is Success -> {
+                        viewPager2.adapter = AdapterViewPageInitialRecommended(it.data)
+                    }
+                }
             }
         }
+
+
         viewPager2.offscreenPageLimit = 3
         viewPager2.clipToPadding = false
         viewPager2.clipChildren = false
@@ -84,10 +80,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun confirmUserIsIn() {
-        if (FirebaseAuth.getInstance().currentUser == null){
-            lifecycleScope.launch {
-                (requireActivity().application as MainApplication).userPreferenceRepository.updateUserLastSession(false,"","")
-            }
+        if (firebaseAuth.currentUser == null) {
+            homeViewModel.setPreferenceUnLogged()
 
             AlertDialog.Builder(requireContext()).setTitle("Session Expired")
                 .setMessage("The session has been closed").setPositiveButton("OK", null).create()
@@ -100,7 +94,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCustom() {
-        binding.tvPerfilName.text = Firebase.auth.currentUser?.displayName
+        binding.tvPerfilName.text = firebaseAuth.currentUser?.displayName
     }
 
     private fun onOutSession() {
@@ -120,35 +114,35 @@ class HomeFragment : Fragment() {
             val r = 1 - abs(position)
             page.scaleY = 0.85f + r * 0.14f
 
-            when{
-                position < -1 ->{
+            when {
+                position < -1 -> {
                     //izq doble
-                    page.y = -position*200f
+                    page.y = -position * 200f
                 }
 
-                position <0 ->{
+                position < 0 -> {
                     //center to izq
-                    page.rotation = position*90/5
-                    page.y = -position*200f
+                    page.rotation = position * 90 / 5
+                    page.y = -position * 200f
 
                 }
 
-                position == 0f ->{
+                position == 0f -> {
                     //centro
                     page.rotation = 0f
                     page.y = 0f
                 }
-                position <= 1 ->{
+                position <= 1 -> {
                     //derecha to center
-                    page.rotation = position*90/5
-                    page.y = 200f*position
+                    page.rotation = position * 90 / 5
+                    page.y = 200f * position
 
 
                 }
                 else -> {
                     //doble derecha
-                    page.rotation=position*90/5
-                    page.y = 200f*position
+                    page.rotation = position * 90 / 5
+                    page.y = 200f * position
                 }
 
             }

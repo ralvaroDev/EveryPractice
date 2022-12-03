@@ -1,27 +1,19 @@
 package com.example.everypractice.data.repository
 
-import com.example.everypractice.data.domain.signup.*
-import com.example.everypractice.data.models.*
-import com.example.everypractice.data.repository.UserResponseStatus.DONE
-import com.example.everypractice.data.repository.UserResponseStatus.ERROR
+import com.example.everypractice.data.models.login.*
+import com.example.everypractice.data.models.login.UserResponseStatus.DONE
+import com.example.everypractice.data.models.login.UserResponseStatus.ERROR
 import com.example.everypractice.utils.*
 import com.example.everypractice.utils.Result.Error
 import com.example.everypractice.utils.Result.Success
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import timber.log.*
 import javax.inject.*
 import kotlin.coroutines.*
 
-enum class UserResponseStatus {
-    DONE, ERROR
-}
-
-data class UserStatus(
-    val status: UserResponseStatus,
-    val value: Any? = null
-)
 
 class LoginRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth
@@ -51,28 +43,58 @@ class LoginRepository @Inject constructor(
         }
     }
 
+    suspend fun loginWithFirebase2(userCredentials: LoginCredentials): Flow<UserStatus> {
+        val (email, password) = userCredentials
+        return withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { result ->
+                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        result.resume(flow { emit(UserStatus(DONE, it.result.user)) })
+                    } else {
+                        Timber.d("Error with credentials in coroutines")
+                        result.resume(flow { emit(UserStatus(ERROR, it.exception)) })
+
+                    }
+                }
+            }
+        }
+    }
+    
+    suspend fun loginWithFirebaseSTABLE(userCredentials: LoginCredentials): Flow<Result<UserStatus>> {
+        val (email, password) = userCredentials
+        Timber.d("Before suspendCancelable")
+        return withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { result ->
+                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Timber.d("It was success")
+                        result.resume(flow { emit(Success(UserStatus(DONE))) })
+                        /*result.resume(Success(UserStatus(DONE)))*/
+                    } else {
+                        Timber.d("Error with credentials in coroutines")
+                        result.resume(flow { emit(Error(it.exception as Exception)) })
+                        /*result.resume(Error(it.exception as Exception))*/
+
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Aqui necesito regresar un valor para usar el user y con este hacerle el update
      */
-    suspend fun signUpWithFirebase(userCredentials: LoginCredentials): Result<UserStatus> {
+    suspend fun signUpWithFirebase(userCredentials: LoginCredentials): Flow<Result<UserStatus>> {
 
         val (email, password) = userCredentials
         return withContext(Dispatchers.IO) {
             suspendCancellableCoroutine { result ->
                 firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        //TODO DEBERIA TRAER AQUI EL PREFERENCE
-                        result.resume(Success(UserStatus(DONE, it.result.user!!)))
+                        result.resume(flow { emit(Success(UserStatus(DONE))) })
                     } else {
-                        try {
-                            //TODO ESTE EXTIENE DEL EXCEPTION, DEBE CHAPARSE COMO TAL VERDAD?
-                            val errorAuth = (it.exception as FirebaseAuthException).errorCode
-                            Timber.d("Repo Sign Error: $errorAuth")
-                            result.resume(Success(UserStatus(ERROR, errorAuth)))
-                        } catch (e: Exception) {
-                            Timber.d("Repo Sign Error Exception ${e.message}")
-                            result.resume(Error(e))
-                        }
+                        Timber.d("Error with credentials in coroutines")
+                        result.resume(flow { emit(Error(it.exception as Exception)) })
                     }
                 }
             }
@@ -80,13 +102,13 @@ class LoginRepository @Inject constructor(
     }
 
     //TODO ES NECESARIO EL LOGIN CREDENTIALS ENTERO?
-    suspend fun updateProfile(update: Update): Result<Boolean> {
+    suspend fun updateProfile(name: String): Result<Boolean> {
         return withContext(Dispatchers.IO) {
             suspendCancellableCoroutine { result ->
                 val profileUpdates = userProfileChangeRequest {
-                    displayName = update.name
+                    displayName = name
                 }
-                update.user.updateProfile(profileUpdates)
+                firebaseAuth.currentUser!!.updateProfile(profileUpdates)
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
                             result.resume(Success(true))

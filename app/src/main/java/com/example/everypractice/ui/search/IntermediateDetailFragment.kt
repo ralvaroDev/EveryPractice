@@ -10,17 +10,16 @@ import androidx.viewpager2.widget.*
 import coil.*
 import coil.request.*
 import coil.transform.*
-import com.example.everypractice.*
 import com.example.everypractice.data.models.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.trash.*
-import com.example.everypractice.ui.movies.vm.*
-import com.google.android.material.snackbar.*
+import com.example.everypractice.ui.*
+import dagger.hilt.android.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
 import kotlin.math.*
 
-
+@AndroidEntryPoint
 class IntermediateDetailFragment : Fragment() {
 
     private var _binding: FragmentIntermediateDetailBinding? = null
@@ -38,11 +37,7 @@ class IntermediateDetailFragment : Fragment() {
     private lateinit var adapter2: AdapterViewPageIntermediate
     private lateinit var viewPager2: ViewPager2
 
-    private val sharedViewModel: MovieViewModel by activityViewModels {
-        FavouriteMoviesViewModelFactory(
-            (requireActivity().application as MainApplication).movieRepository
-        )
-    }
+    private val sharedViewModel: MovieViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,14 +149,14 @@ class IntermediateDetailFragment : Fragment() {
         viewPager2.clipToPadding = false
         viewPager2.clipChildren = false
         viewPager2.getChildAt(0).overScrollMode = 2
-        requireActivity().runOnUiThread {
+        /*requireActivity().runOnUiThread {
             val snackbar = Snackbar.make(
                 requireView(),
                 "position clicked: $positionClicked",
                 Snackbar.LENGTH_SHORT
             )
             snackbar.show()
-        }
+        }*/
 
         //el post es para viewPager2
         viewPager2.post {

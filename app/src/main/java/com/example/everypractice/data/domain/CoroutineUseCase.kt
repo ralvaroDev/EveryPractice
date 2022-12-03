@@ -26,8 +26,19 @@ abstract class CoroutineUseCase<in P, R>(private val coroutineDispatcher: Corout
 
 abstract class FlowUseCase<in P, R>(private val coroutineDispatcher: CoroutineDispatcher) {
     operator fun invoke(parameters: P): Flow<Result<R>> = execute(parameters)
-        .catch { e -> emit(Error(Exception(e))) }
+        .catch {
+                e -> emit(Error(Exception(e)))
+            Timber.d("No entro aqui xd")
+        }
         .flowOn(coroutineDispatcher)
 
     protected abstract fun execute(parameters: P): Flow<Result<R>>
+}
+
+abstract class SuspendFlowUseCase<in P, R>(private val coroutineDispatcher: CoroutineDispatcher) {
+    suspend operator fun invoke(parameters: P): Flow<Result<R>> = execute(parameters)
+        .catch { e -> emit(Error(Exception(e))) }
+        .flowOn(coroutineDispatcher)
+
+    protected abstract suspend fun execute(parameters: P): Flow<Result<R>>
 }
