@@ -10,8 +10,6 @@ import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
 import com.example.everypractice.consval.*
-import com.example.everypractice.data.models.login.UserResponseStatus.DONE
-import com.example.everypractice.data.models.login.UserResponseStatus.ERROR
 import com.example.everypractice.databinding.*
 import com.example.everypractice.ui.*
 import com.example.everypractice.ui.signin.*
@@ -46,11 +44,13 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        enableOrDisableButtonSignIn()
 
         binding.tvForgot.setOnClickListener { goToRecoverPassword() }
         binding.tvRegister.setOnClickListener { goToRegister() }
+        binding.btnLogin.setOnClickListener { loginAction() }
 
-        enableOrDisableButtonSignIn()
+
 
         val emailTest = USER_EMAIL_TEST
         val passwordTest = USER_PASSWORD_TEST
@@ -61,107 +61,30 @@ class LoginFragment : Fragment() {
         binding.tfPassword.setText(passwordTest, TextView.BufferType.SPANNABLE)
         binding.tfPassword.hint = passwordTest
 
-        /* binding.btnLogin.setOnClickListener {
-             viewModel.startFakeLogin(
-                 binding.tfEmail.text.toString(),
-                 binding.tfPassword.text.toString()
-             )
-         }*/
-        /*lifecycleScope.launch {
-            viewModel.nav.collectLatest {
-                when (it) {
-                    DONE -> {
-                        val intent = Intent(requireContext(), MainActivity::class.java)
-                        startActivity(intent)
-                        requireActivity().finish()
-                    }
-                    ERROR -> Timber.d("Receive error en UI, no jump")
-                }
-            }
-        }*/
-        /////////////////
-        /*binding.btnLogin.setOnClickListener {
-            lifecycleScope.launch {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.login(
-                        binding.tfEmail.text.toString(),
-                        binding.tfPassword.text.toString()
-                    ).collectLatest {
-                        Timber.d("Colectando $it")
-                        when(it){
-                            is Success -> {
-                                when(it.data.status) {
-                                    DONE -> {
-                                        val intent = Intent(requireContext(), MainActivity::class.java)
-                                        startActivity(intent)
-                                        requireActivity().finish()
-                                    }
-                                    ERROR -> Timber.d("Error with credentials")
-                                }
-                            }
-                            is Error -> Timber.d("Receive error en UI : ${it.exception}")
-                            Loading -> {}
-                        }
-                    }
-                }
-            }
-        }*/
-        /////////////////////////
-        binding.btnLogin.setOnClickListener {
-            loginActionSTABLE()
-        }
+
     }
 
     private fun loginAction() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.startLogin(
+                viewModel.startLoginFromServer(
                     binding.tfEmail.text.toString(),
                     binding.tfPassword.text.toString()
                 ).collectLatest {
                     when (it) {
-                        DONE -> {
-                            signInTries = 0
-                            jumpToMainActivity()
-                        }
-                        ERROR -> {
-                            signInTries++
-                            if (signInTries > 2) {
-                                showAlert()
-                            }
-                            binding.tflLogin.error = "Something invalid"
-                            binding.tflPassword.error = "Something invalid"
-                        }
-                        is Exception -> toast()
-                        is Loading -> Loading
-                    }
-                }
-            }
-        }
-    }
-
-    //TODO PUEDE LUEGO DEVOLVERME SOLO UN ENUM DEL CASO QUE HA SUCEDIDO
-    // Y EN BASE A ESO REALIZA UNA FUNCION EN ESPECIFICO XD
-    private fun loginActionSTABLE(){
-        lifecycleScope.launch{
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.startLoginSTABLE(
-                    binding.tfEmail.text.toString(),
-                    binding.tfPassword.text.toString()
-                ).collectLatest {
-                    when(it) {
                         is Success -> {
-                            signInTries = 0
                             jumpToMainActivity()
                         }
                         is Error -> {
                             try {
+                                showAlert()
                                 val eCredentials = (it.exception as FirebaseAuthException).errorCode
                                 binding.tflLogin.error = "Something invalid"
                                 binding.tflPassword.error = "Something invalid"
                                 Timber.d("Error with credentials: $eCredentials")
-                            } catch (e: Exception){
+                            } catch (e: Exception) {
                                 Timber.d("Error ${it.exception.message}")
+                                toast()
                             }
                         }
                         Loading -> {
@@ -179,25 +102,27 @@ class LoginFragment : Fragment() {
         requireActivity().finish()
     }
 
-    private fun toast(){
+    private fun toast() {
         requireActivity().runOnUiThread {
             Toast.makeText(
                 requireContext(),
                 "No internet connection!! :(",
                 Toast.LENGTH_SHORT
-            )
-                .show()
+            ).show()
         }
     }
 
     private fun showAlert() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Error")
-            .setMessage("The information still Incorrect :( Desea restablecerlo?")
-            .setPositiveButton("Aceptar", null)
-            .setNegativeButton("Si, lo olvide :c", myDialogInterface())
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+        signInTries++
+        if (signInTries > 3) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Error")
+                .setMessage("The information still Incorrect :( Desea restablecerlo?")
+                .setPositiveButton("Aceptar", null)
+                .setNegativeButton("Si, lo olvide :c", myDialogInterface())
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        }
     }
 
     private fun myDialogInterface() = DialogInterface.OnClickListener { _, _ ->
@@ -219,9 +144,14 @@ class LoginFragment : Fragment() {
         var emailWithValidPattern = false
         var passWithValidPattern = false
         var passLengthWithPattern = false
-
         binding.tfEmail.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 emailWithValidPattern = EMAIL_PATTERN.matches(s.toString())
@@ -232,7 +162,13 @@ class LoginFragment : Fragment() {
         })
 
         binding.tfPassword.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 passWithValidPattern = s.toString().trim { it <= ' ' }.isNotEmpty()

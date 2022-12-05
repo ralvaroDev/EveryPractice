@@ -63,13 +63,16 @@ class SignUpFragment : Fragment() {
     private fun signUpAction() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.startSignIn(
+                viewModel.startCreatingUser(
                     binding.tfRegisterEmail.text.toString(),
                     binding.tfRegisterPassword.text.toString(),
                     binding.tfRegisterName.text.toString()
                 ).collectLatest {
                     when(it) {
-                        is Loading -> Loading
+                        is Loading -> {
+                            //Timber.d("Loading Bro")
+                            Loading
+                        }
                         is Error -> {
                             try {
                                 val eCredentials = (it.exception as FirebaseAuthException).errorCode
@@ -83,6 +86,7 @@ class SignUpFragment : Fragment() {
                             }
                         }
                         is Success -> {
+                            //Timber.d("listo Bro")
                             goToMainActivity()
                         }
                     }

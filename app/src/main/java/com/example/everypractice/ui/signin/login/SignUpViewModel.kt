@@ -20,36 +20,41 @@ class SignUpViewModel @Inject constructor(
     private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel() {
 
-    suspend fun startSignIn(
+    fun startCreatingUser(
         emailUser: String,
         password: String,
         nameUser: String
-    ): StateFlow<Result<Boolean>> {
-
-        return withContext(Dispatchers.IO) {
-            val result = signUpUseCase(LoginCredentials(emailUser, password, nameUser)).map {
-                when (it) {
-                    is Error -> { Error(it.exception) }
-                    Loading -> { Loading }
-                    is Success -> {
-                        when (val update = updateUserUseCase(nameUser)) {
-                            is Success -> {
-                                Timber.d("go to Home because ${it.data.status.name}")
+    ): StateFlow<Result<Unit>> {
+        return flow {
+            try {
+                val response = withContext(Dispatchers.IO){
+                    val result = signUpUseCase.receiveSignUpResponseFromServer(
+                        LoginCredentials(emailUser,password, nameUser)
+                    )
+                    if (result.first() is Success){
+                        //Timber.d("Result in VM is success")
+                        val update = updateUserUseCase.receiveSignUpResponseFromServer(nameUser)
+                        update.collectLatest {
+                            if (it is Success){
                                 setPreferenceLogged()
-                                Success(update.data)
                             }
-                            is Error -> {
-                                Timber.d("Receive exception updating User : ${update.exception.message}")
-                                Error(update.exception)
-                            }
-                            Loading -> {}
                         }
+                        //Timber.d("After of use func in VM to update user")
+                        return@withContext update.first()
+                    } else {
+                        //Timber.d("Result in VM was error")
+                        return@withContext result.first()
                     }
                 }
-            } as Flow<Result<Boolean>>
-            return@withContext result
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Loading)
+                emit(response)
+            } catch (e: Exception){
+                Timber.d("Error in func creating User: ${e.message}")
+                emit(Error(e))
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, Loading)
     }
+
+
 
     private fun setPreferenceLogged() {
         viewModelScope.launch {

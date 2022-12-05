@@ -10,7 +10,7 @@ import javax.inject.*
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private  val loadMultiSearchResultUseCase: LoadMultiSearchResultUseCase,
+    private val loadMultiSearchResultUseCase: LoadMultiSearchResultUseCase,
     private val loadPopularMoviesUseCase: LoadPopularMoviesUseCase,
     private val loadMovieDetailsUseCase: LoadMovieDetailsUseCase,
     private val loadMovieStaffUseCase: LoadMovieStaffUseCase,

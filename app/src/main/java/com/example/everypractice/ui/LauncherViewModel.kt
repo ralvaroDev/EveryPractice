@@ -22,6 +22,7 @@ class LauncherViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, Loading)
 
+
 }
 
 enum class StartView {
