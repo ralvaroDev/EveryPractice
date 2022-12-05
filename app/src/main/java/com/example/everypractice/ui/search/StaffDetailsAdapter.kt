@@ -1,28 +1,27 @@
 package com.example.everypractice.ui.search
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import com.example.everypractice.data.models.TemporaryStaffMovie
-import com.example.everypractice.databinding.ItemStaffMovieBinding
+import android.view.*
+import androidx.recyclerview.widget.*
+import coil.*
+import com.example.everypractice.data.models.*
+import com.example.everypractice.databinding.*
 
 class StaffDetailsAdapter(
     private val listStaff: List<TemporaryStaffMovie>,
-    private val onItemStaffSelected: (id:Int) -> Unit
+    private val onItemStaffSelected: (id: Int) -> Unit
 ) : RecyclerView.Adapter<StaffDetailsAdapter.StaffDetailsViewHolder>() {
 
     class StaffDetailsViewHolder(private val binding: ItemStaffMovieBinding) :
-        RecyclerView.ViewHolder(binding.root){
+        RecyclerView.ViewHolder(binding.root) {
 
-            fun bind(
-                staff: TemporaryStaffMovie,
-                onItemStaffSelected: (id:Int) -> Unit
-            ){
-                binding.ivImageActor.load(staff.profilePath)
-                binding.tvRoleInMovie.text = staff.character
-                binding.tvRealName.text = staff.originalName
-            }
+        fun bind(
+            staff: TemporaryStaffMovie,
+            onItemStaffSelected: (id: Int) -> Unit
+        ) {
+            binding.ivImageActor.load(staff.profilePath)
+            binding.tvRoleInMovie.text = staff.character
+            binding.tvRealName.text = staff.originalName
+        }
 
     }
 
@@ -33,7 +32,7 @@ class StaffDetailsAdapter(
     }
 
     override fun onBindViewHolder(holder: StaffDetailsViewHolder, position: Int) {
-        holder.bind(listStaff[position],onItemStaffSelected)
+        holder.bind(listStaff[position], onItemStaffSelected)
     }
 
     override fun getItemCount(): Int {

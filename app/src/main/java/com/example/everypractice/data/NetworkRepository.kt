@@ -3,9 +3,9 @@ package com.example.everypractice.data
 import com.example.everypractice.data.models.*
 import com.example.everypractice.data.red.*
 import com.example.everypractice.data.red.network.models.*
-import com.example.everypractice.utils.Result.Success
-import kotlinx.coroutines.flow.*
 import javax.inject.*
+
+enum class RequestNetStatus { LOADING, ERROR, DONE }
 
 class NetworkRepository @Inject constructor(
     private val movieApiService: MovieApiService
@@ -32,8 +32,8 @@ class NetworkRepository @Inject constructor(
     /**
      * Function that gets popular object from petition and return it as TemporaryDomainModel
      */
-    suspend fun obtainListOfPopularMovies(): Flow<com.example.everypractice.utils.Result<TemporaryPopularMovie>> {
-        return flow { emit(Success(movieApiService.getListPopularMovies().asTemporaryDomainModel())) }
+    suspend fun obtainListOfPopularMovies(): List<TemporaryPopularMovieElement> {
+        return movieApiService.getListPopularMovies().asTemporaryDomainModel().results
     }
 
     /**

@@ -8,6 +8,7 @@ import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.viewpager2.widget.*
 import com.example.everypractice.databinding.*
+import com.example.everypractice.ui.*
 import com.example.everypractice.ui.signin.*
 import com.example.everypractice.utils.Result.*
 import com.google.firebase.auth.*
@@ -24,6 +25,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private val sharedViewModel: MovieViewModel by activityViewModels()
     private val homeViewModel: HomeViewModel by viewModels()
 
     @Inject
@@ -42,22 +44,20 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //TODO BUSCAR LA MANERA DE INSTANCIARLO AQUI
+        val shared = sharedViewModel
 
         confirmUserIsIn()
         setupCustom()
-
-        binding.btnNotification.setOnClickListener {
-            firebaseAuth.signOut()
-            onOutSession()
-            homeViewModel.setPreferenceUnLogged()
-            activity?.finish()
-        }
+        binding.btnNotification.setOnClickListener { logOut() }
 
         viewPager2 = binding.vp2DailyRecomendation
         lifecycleScope.launch {
             homeViewModel.showRecommendedMoviesHome.collectLatest {
-                when(it){
-                    is Error -> {Timber.d("Error getting movies from Database")}
+                when (it) {
+                    is Error -> {
+                        Timber.d("Error getting movies from Database")
+                    }
                     Loading -> {}
                     is Success -> {
                         viewPager2.adapter = AdapterViewPageInitialRecommended(it.data)
@@ -68,15 +68,20 @@ class HomeFragment : Fragment() {
 
 
         viewPager2.offscreenPageLimit = 3
-        viewPager2.clipToPadding = false
-        viewPager2.clipChildren = false
-        viewPager2.getChildAt(0).overScrollMode = 2
+        //viewPager2.getChildAt(0).overScrollMode = 2
         viewPager2.post {
             viewPager2.setCurrentItem(1, true)
         }
 
-        setUpoTransformer()
+        setUpTransformer()
 
+    }
+
+    private fun logOut() {
+        firebaseAuth.signOut()
+        onOutSession()
+        homeViewModel.setPreferenceUnLogged()
+        activity?.finish()
     }
 
     private fun confirmUserIsIn() {
@@ -98,16 +103,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun onOutSession() {
-
         val intent = Intent(requireContext(), LoginActivity::class.java)
         startActivity(intent)
-
     }
 
     /**
      * Function that make a format to the elements of viewPager
      * */
-    private fun setUpoTransformer() {
+    private fun setUpTransformer() {
         val transformer = CompositePageTransformer()
         transformer.addTransformer(MarginPageTransformer(40))
         transformer.addTransformer { page, position ->

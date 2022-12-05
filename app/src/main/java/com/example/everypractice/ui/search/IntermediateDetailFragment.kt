@@ -15,6 +15,7 @@ import com.example.everypractice.databinding.*
 import com.example.everypractice.trash.*
 import com.example.everypractice.ui.*
 import dagger.hilt.android.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.*
 import kotlin.math.*
@@ -137,11 +138,11 @@ class IntermediateDetailFragment : Fragment() {
     private fun initViewPager() {
         viewPager2 = binding.viewPager2
         lifecycleScope.launchWhenCreated {
-            sharedViewModel.showListFromSearch().collectLatest {search ->
-                adapter2 = AdapterViewPageIntermediate(search.results)
+            sharedViewModel.showListFromSearch().collectLatest {
+                adapter2 = AdapterViewPageIntermediate(it.data.results)
                 //{ _, _ -> lambdaFunctionDisable() }
 
-                currentIdView = search.results
+                currentIdView = it.data.results
             }
         }
         viewPager2.adapter = adapter2
@@ -197,7 +198,9 @@ class IntermediateDetailFragment : Fragment() {
     }
 
     private fun onClickMovieAndSendPetition(id: Int) {
-        sharedViewModel.sendPetitionToGetMovieDetails(id)
+        lifecycleScope.launch {
+            sharedViewModel.sendPetitionToGetMovieDetails(id)
+        }
         sharedViewModel.sendPetitionToGetStaffFromMovieWithGivenId(id)
         sharedViewModel.sendPetitionToGetImagesFromMovieWithGivenId(id)
     }

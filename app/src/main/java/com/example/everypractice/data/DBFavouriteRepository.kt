@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.*
 import javax.inject.*
 
 //TODO ESTE DEBE SER SINGLETOS?
-class FavouriteMovieRepository @Inject constructor(
+class DBFavouriteRepository @Inject constructor(
     private val daoDatabaseFavouriteMovie: DaoDatabaseFavouriteMovie
 ) {
 
     /*----DATA BASE----*/
 
-    val allListFavouriteMoviesFromDatabase: Flow<List<PermanentFavouriteMovies>> =
+    val obtainListOfFavouriteStoredMovies: Flow<List<PermanentFavouriteMovies>> =
         daoDatabaseFavouriteMovie.getAllListDatabaseFavouriteMovies(true).map {
             it.asDomainModel()
         }
 
-    val allListFavouriteUnSaveMoviesFromDatabase: Flow<List<PermanentFavouriteMovies>> =
+    val obtainListOfFavouriteSeenMovies: Flow<List<PermanentFavouriteMovies>> =
         daoDatabaseFavouriteMovie.getAllListDatabaseFavouriteMovies(false).map {
             it.asDomainModel()
         }

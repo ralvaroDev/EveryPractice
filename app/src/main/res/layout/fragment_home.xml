@@ -140,6 +140,9 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vp2_daily_recomendation"
             android:layout_width="0dp"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+
             android:layout_height="0dp"
             android:overScrollMode="never"
             android:paddingHorizontal="60dp"

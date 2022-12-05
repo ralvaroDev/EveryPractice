@@ -1,8 +1,8 @@
 package com.example.everypractice.data.red.network.models
 
-import com.example.everypractice.consval.BASE_POSTER_IMAGE_URL
-import com.example.everypractice.data.models.TemporaryStaffMovie
-import com.google.gson.annotations.SerializedName
+import com.example.everypractice.consval.*
+import com.example.everypractice.data.models.*
+import com.google.gson.annotations.*
 
 data class NetworkStaffFromMovieContainer(
     var id: Int,

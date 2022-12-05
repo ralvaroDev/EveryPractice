@@ -1,17 +1,15 @@
 package com.example.everypractice.data.models
 
-import com.example.everypractice.data.database.DatabaseFavouriteMovie
+import com.example.everypractice.data.database.*
 
 data class TemporaryDetailMovie(
     val id: Int = 0,
     val movieTitle: String = "No title",
     val overview: String = "",
     val adult: Boolean = false,
-    val genres: List<Int> = listOf(),
-    //TODO LUEGO VER SI ES RECOMENDABLE TENER DIRECTO AQUI EL BITMAP O SOLO LA URL
-    //TODO EL QUE TENGAN VAL HACE QUE NUNCA VAYAN A ACTUALIZAR?
+    var genres: List<Int> = listOf(),
     val posterPathUrl: String = "",
-    val backdropPathUrl: String = "",
+    var backdropPathUrl: String = "",
     val releaseDate: String = "",
     val voteAverage: Double = 0.0,
     val idCollection: Int = 0,

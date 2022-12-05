@@ -17,7 +17,8 @@ class FavouriteSeenFragment : Fragment() {
     private var _binding: FragmentFavouriteSeenBinding? = null
     private val binding get() = _binding!!
 
-    private val sharedViewModel: MovieViewModel by activityViewModels()
+    private val movieViewModel: MovieViewModel by activityViewModels()
+    private val sharedViewModel: FavouriteViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +38,7 @@ class FavouriteSeenFragment : Fragment() {
 
 
         lifecycleScope.launch {
-            sharedViewModel.getFavouriteSeenMovies().collectLatest {
+            sharedViewModel.showListOfSeenMovies.collectLatest {
                 adapter.submitList(it)
             }
         }
@@ -59,14 +60,15 @@ class FavouriteSeenFragment : Fragment() {
         // QUE CUANDO VENGAN DE AQUI, AL OTRO LADO NO ESCUCHE LOS DETAILS, SINO SOLO LLAME A LOS
         // GUARDADOS, O TAMBIEN PUEDE SER QUE MUESTRE Y LUEGO PIDA, QUE VERIFIQUE SI LA PETICION
         // ESTA Y DEVUELVE DONE, SINO EN DICHO CASO, QUE USE DE LA BASE DE DATOS (DATO) EL 2DO MEJOR
-        sharedViewModel.sendPetitionToGetMovieDetails(id)
-        sharedViewModel.sendPetitionToGetStaffFromMovieWithGivenId(id)
-        sharedViewModel.sendPetitionToGetImagesFromMovieWithGivenId(id)
+
+        movieViewModel.sendPetitionToGetMovieDetails(id)
+        movieViewModel.sendPetitionToGetStaffFromMovieWithGivenId(id)
+        movieViewModel.sendPetitionToGetImagesFromMovieWithGivenId(id)
     }
 
     private fun moveMovieToRestored(id: Int) {
         lifecycleScope.launch {
-            sharedViewModel.updateSavedStatusFromDatabaseWithId(saved = true, id = id)
+            sharedViewModel.moveToSeenOrStoredList(saved = true, id = id)
         }
     }
 

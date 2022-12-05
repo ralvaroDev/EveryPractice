@@ -7,11 +7,11 @@ import android.widget.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
+import com.example.everypractice.data.RequestNetStatus.*
 import com.example.everypractice.data.models.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.helpers.extensions.*
 import com.example.everypractice.ui.*
-import com.example.everypractice.utils.Result.*
 import dagger.hilt.android.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -21,7 +21,7 @@ import timber.log.*
 class SearchFragment : Fragment() {
 
     companion object {
-        private val generesList = listOf(
+        private val genresList = listOf(
             GenresMovies(28),
             GenresMovies(12),
             GenresMovies(16),
@@ -47,15 +47,13 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private val searchViewModel: SearchViewModel by viewModels()
-
+    //private val searchViewModel: SearchViewModel by viewModels()
     private val sharedViewModel: MovieViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         _binding = FragmentSearchBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -63,12 +61,10 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapterGenres = GenresInSearchAdapter(generesList.shuffled()){
+        val adapterGenres = GenresInSearchAdapter(genresList.shuffled()){
             //function to send petition by categories
         }
         binding.layoutNewSearchLoader.rvGenresListSearch.adapter = adapterGenres
-
-
 
         binding.icShare.setOnClickListener {
             /*lifecycleScope.launch {
@@ -85,7 +81,7 @@ class SearchFragment : Fragment() {
             onClickItemFromPopular(it)
         }
 
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 searchViewModel.popularMovies.collectLatest {
                     when(it){
@@ -108,31 +104,56 @@ class SearchFragment : Fragment() {
                 }
             }
 
-        }
+        }*/
+/////////////////////////////////////
+        /*lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                sharedViewModel.showListOfPopularMovie().collectLatest {
+                    when(it){
+                        is Error -> {
+                            binding.layoutNewSearchLoader.tvTitlePopular.gone()
+                            binding.layoutNewSearchLoader.rvPopularMovies.gone()
+                            Timber.d("Error: ${it.exception.message}")
+                        }
+                        Loading -> {
+                            Timber.d("Loading bro")
+                            binding.layoutNewSearchLoader.rvPopularMovies.inVisible()
+                            binding.layoutNewSearchLoader.layoutShimmerPopularItems.shimmerLoader.visible()
+                        }
+                        is Success -> {
 
-        /*lifecycleScope.launchWhenStarted {
-            sharedViewModel.requestPopularStatus.collectLatest { status ->
-                Timber.d("MovieStatus POPULAR in collector: $status")
-                when (status) {
-                    RequestMovieStatus.LOADING -> {
-                        *//*binding.rvMovieSearch.visibility = View.GONE
-                        binding.layoutShimmerNotificationsLoader.shimmerLoader.visible()*//*
-                    }
-                    RequestMovieStatus.ERROR -> {
-                        *//*binding.rvMovieSearch.visibility = View.GONE
-                        binding.layoutShimmerNotificationsLoader.shimmerLoader.gone()*//*
-                    }
-                    RequestMovieStatus.DONE -> {
-                        *//*binding.layoutShimmerNotificationsLoader.shimmerLoader.gone()
-                        binding.rvMovieSearch.visibility = View.VISIBLE*//*
-                        Timber.d("MovieStatus inside IF: $status")
-                        sharedViewModel.showListOfPopularMovie().collectLatest {
-                            adapter.submitList(it.results)
                         }
                     }
                 }
             }
         }*/
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                sharedViewModel.showListOfPopularMovie().collectLatest {
+                    when(it.state){
+                        LOADING -> {
+                            //Timber.d("Loading bro")
+                            binding.layoutNewSearchLoader.rvPopularMovies.inVisible()
+                            binding.layoutNewSearchLoader.layoutShimmerPopularItems.shimmerLoader.visible()
+                        }
+                        ERROR -> {
+                            //Timber.d("Error bro")
+                            binding.layoutNewSearchLoader.tvTitlePopular.gone()
+                            binding.layoutNewSearchLoader.rvPopularMovies.gone()
+                            binding.layoutNewSearchLoader.layoutShimmerPopularItems.shimmerLoader.gone()
+                            Timber.d("Error: ${it.exception?.message}")
+                        }
+                        DONE -> {
+                            binding.layoutNewSearchLoader.rvPopularMovies.inVisible()
+                            adapter.submitList(it.data)
+                            binding.layoutNewSearchLoader.rvPopularMovies.visible()
+                            binding.layoutNewSearchLoader.layoutShimmerPopularItems.shimmerLoader.gone()
+                        }
+                    }
+                }
+            }
+        }
 
         binding.layoutNewSearchLoader.rvPopularMovies.adapter = adapter
     }
@@ -144,7 +165,6 @@ class SearchFragment : Fragment() {
         sharedViewModel.sendPetitionToGetImagesFromMovieWithGivenId(id)
         val action = SearchFragmentDirections.toDetailMovieFragment(
             idmovie = id,
-            //TODO SI ES MENOS UNO QUE REGRESE AQUI NO A INTERMEDIATE
             recorderposition = -1
         )
         findNavController().navigate(action)
@@ -170,13 +190,9 @@ class SearchFragment : Fragment() {
      * Function that send petition  petition and update the status of it
      */
     private fun goToBrowserMovie(entry: String) {
-        //ESTO MANDA LA SOLICITUD QUE A LA VEZ ALMACENA LO RECIBIDO Y EMITE LA LISTA GUARDADA
-        lifecycleScope.launch {
-            sharedViewModel.sendPetitionSearchMovie(entry)
-        }
+        sharedViewModel.sendPetitionSearchMovie(entry)
     }
 
-    //CREA UNA EXTENSION KOTLIN QUE PERMITE LINKEAR EL BOTON ENTER A CUALQUIER FUNCION QUE LA NECESITE
     private fun EditText.onSearch(callback: () -> Unit) {
         setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -187,5 +203,4 @@ class SearchFragment : Fragment() {
             } else false
         }
     }
-
 }

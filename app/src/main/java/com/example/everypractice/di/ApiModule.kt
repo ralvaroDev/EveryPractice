@@ -9,6 +9,7 @@ import okhttp3.Interceptor.Chain
 import okhttp3.logging.*
 import retrofit2.*
 import retrofit2.converter.gson.*
+import timber.log.*
 import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.*
 
@@ -25,7 +26,7 @@ object ApiModule {
     fun provideHttpTimberInterceptor() : HttpLoggingInterceptor {
         val customLogger = HttpLoggingInterceptor.Logger {
             //Log.d("OkHttp", message)
-            //Timber.tag("OkHttp").v(message)
+            //Timber.tag("OkHttp").v(it)
         }
         return HttpLoggingInterceptor(customLogger).apply {
             level = HttpLoggingInterceptor.Level.BODY

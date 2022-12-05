@@ -2,7 +2,7 @@ package com.example.everypractice.data.models
 
 data class TemporaryImageMovie(
     var backdrops: List<TemporaryBackdropsElement> = arrayListOf(),
-    var id: Int,
+    var id: Int = 0,
     var posters: List<TemporaryPosterElement> = arrayListOf(),
 )
 
