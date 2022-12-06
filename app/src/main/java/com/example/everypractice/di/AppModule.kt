@@ -7,6 +7,8 @@ import androidx.datastore.preferences.*
 import androidx.datastore.preferences.core.*
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.*
+import com.google.firebase.firestore.*
+import com.google.firebase.firestore.ktx.*
 import com.google.firebase.ktx.*
 import dagger.*
 import dagger.hilt.*
@@ -24,6 +26,11 @@ class AppModule {
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+
+    @Singleton
+    @Provides
+    fun provideFirestore(): FirebaseFirestore = Firebase.firestore
+
 
     @Singleton
     @Provides

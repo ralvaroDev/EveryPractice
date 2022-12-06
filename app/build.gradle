@@ -102,6 +102,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-dynamic-links-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
 
     //DataStore
     implementation "androidx.datastore:datastore-preferences:1.1.0-alpha01"
