@@ -10,7 +10,10 @@ import androidx.navigation.*
 import androidx.navigation.fragment.*
 import com.example.everypractice.R
 import com.example.everypractice.databinding.*
+import com.google.firebase.messaging.*
 import dagger.hilt.android.*
+import timber.log.*
+import javax.inject.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity()
@@ -28,7 +31,11 @@ class MainActivity : AppCompatActivity()
             R.id.navigation_search,
             R.id.navigation_favourite
         )
+        const val TOKEN = "token"
     }
+
+    @Inject
+    lateinit var firebaseMessaging: FirebaseMessaging
 
     private lateinit var binding: ActivityMainBinding
 
@@ -97,6 +104,28 @@ class MainActivity : AppCompatActivity()
             view.onApplyWindowInsets(insets)
         }
 
+
+    }
+
+    private fun fireMesagge(){
+        firebaseMessaging.token.addOnCompleteListener {
+            if (!it.isSuccessful){
+                Timber.d("Fetching FCM registration token failed: ${it.exception?.message}")
+                return@addOnCompleteListener
+            }
+            val token = it.result
+            Timber.d("The toke of user is: $token")
+        }
+
+        //TEMAS
+        firebaseMessaging.subscribeToTopic("testing")
+
+        //push
+
+        val url =  intent.getStringExtra(TOKEN)
+        url?.let {
+            Timber.d("Ha llegado info en un push: $it")
+        }
 
     }
 

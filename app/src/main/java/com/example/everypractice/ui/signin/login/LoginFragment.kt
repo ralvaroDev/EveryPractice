@@ -12,6 +12,7 @@ import androidx.navigation.fragment.*
 import com.example.everypractice.consval.*
 import com.example.everypractice.databinding.*
 import com.example.everypractice.ui.*
+import com.example.everypractice.ui.izi.*
 import com.example.everypractice.ui.signin.*
 import com.example.everypractice.utils.Result.*
 import com.google.firebase.auth.*
@@ -60,6 +61,12 @@ class LoginFragment : Fragment() {
 
         binding.tfPassword.setText(passwordTest, TextView.BufferType.SPANNABLE)
         binding.tfPassword.hint = passwordTest
+
+        binding.imageView2.setOnClickListener {
+            val intent = Intent(requireContext(),IziActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
 
 
     }

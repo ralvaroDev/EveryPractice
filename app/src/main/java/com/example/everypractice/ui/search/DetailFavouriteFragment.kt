@@ -106,7 +106,6 @@ class DetailFavouriteFragment : Fragment() {
                                     "$year | $genres  | ${getTimeToText(movie.runtime)}"
                             }
 
-                            //TODO ESTE SI ES SOLO DE AQYU ASI QUE REQUIERE SU PRIPIO FRAGMENT
                             detailViewModel.showListOfIdsStored
                                 .collectLatest { listIds ->
                                     binding.btnSave.setOnClickListener {

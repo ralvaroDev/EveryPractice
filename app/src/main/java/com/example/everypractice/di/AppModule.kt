@@ -10,6 +10,8 @@ import com.google.firebase.auth.ktx.*
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.*
 import com.google.firebase.ktx.*
+import com.google.firebase.messaging.*
+import com.google.firebase.messaging.ktx.*
 import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.qualifiers.*
@@ -31,6 +33,9 @@ class AppModule {
     @Provides
     fun provideFirestore(): FirebaseFirestore = Firebase.firestore
 
+    @Singleton
+    @Provides
+    fun provideFireMessaging(): FirebaseMessaging = Firebase.messaging
 
     @Singleton
     @Provides
